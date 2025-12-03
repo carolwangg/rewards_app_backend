@@ -1,4 +1,4 @@
-import db from './database.js';
+import db from './clients/database.js';
 
 (async function runTests(){
     try{

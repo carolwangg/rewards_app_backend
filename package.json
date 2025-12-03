@@ -1,9 +1,14 @@
 {
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.943.0",
+    "@clerk/backend": "^2.24.0",
+    "@clerk/express": "^1.7.53",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "expo-auth-session": "~7.0.9",
     "expo-crypto": "~15.0.7",
     "express": "^5.1.0",
+    "express-fileupload": "^1.5.2",
     "mysql2": "^3.15.3"
   },
   "type": "module"

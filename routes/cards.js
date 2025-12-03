@@ -1,5 +1,5 @@
 import { Router, json, urlencoded } from 'express';
-import db from "../database.js";
+import db from "../clients/database.js";
 
 const router = Router();
 router.use(json());
@@ -7,19 +7,50 @@ router.use(urlencoded({ extended: true }));
 
 // Define routes
 router.get('/', async (req, res) => {
-  res.status(201).statusMessage("Cards list fetched").json(JSON.stringify(await db.getCards()));
+  res.status(200).json(await db.getCards());
 });
 
 router.get('/:id', async (req, res) => {
     //get card with given id
     const card_id = req.params.id;
-    res.json(JSON.stringify(await db.getCard(card_id)));
+    const card = await db.getCard(card_id)
+    res.status(200).json({message: "Card fetched", user: card});
 });
 
-router.get('/:id', async (req, res) => {
-    //get all cards rewards from this customer
-    const customer_id = req.params.id;
-    res.json(JSON.stringify(await db.getCardsFromCustomer(customer_id)));
+router.get('/create', (req, res) => {
+  res.status(200).send('Create cards');
+});
+
+router.post('/create', async(req, res) => {
+  // req.body contains the parsed JSON data
+  const data = req.body;
+  const business = await db.getBusiness(data.businessId);
+  if (business == null){
+    res.status(400).json({ message: 'Business does not exist', user: req.body });
+    console.log("Business does not exist");
+  }else{
+    const success = db.addCard(data.businessId, data.name);
+    console.log(success); 
+    res.status(201).json({ message: 'Card created', user: req.body });
+    console.log("Card created");
+  }
+  
+});
+
+router.post('/:id/update', async(req, res) => {
+  // req.body contains the parsed JSON data
+  const cardId = req.params.id;
+  const data = req.body;
+  const card = await db.getCard(cardId);
+  if (card == null){
+    res.status(400).json({ message: 'Card does not exist', user: req.body });
+    console.log("Card does not exist");
+  }else{
+    const success = db.updateCard(cardId, data.name, data.description, data.imageUrl, data.contactInfo, data.colour);
+    console.log(success);
+    res.status(200).json({ message: 'Card updated', user: "success" });
+    console.log("Card updated for "+cardId);
+  }
 });
 
 export default router;
