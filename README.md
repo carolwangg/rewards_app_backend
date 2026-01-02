@@ -6,7 +6,8 @@ Code for running the web server on which the Zinks app operates.
 - Node.js
 - npm
 - git
-- MySQL
+- MySQL Server
+- MySQL CLI or MySQL Workbench
 
 ### Steps
 1. Clone the repo
