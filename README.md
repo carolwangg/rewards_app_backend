@@ -18,3 +18,5 @@ git clone https://github.com/carolwangg/rewards_app_backend.git
 ```
 npm install
 ```
+## Database
+<img width="1261" height="868" alt="Card App" src="https://github.com/user-attachments/assets/da19ed0d-1388-4d17-87c6-b91385a9eb2c" />
