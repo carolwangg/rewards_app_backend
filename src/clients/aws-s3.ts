@@ -1,20 +1,21 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3";
 import dotenv from 'dotenv';
 
-let s3Client;
 class awsS3Client {
+    #s3Client: S3Client;
     constructor(){
         dotenv.config();
-        s3Client = new S3Client({
+        const s3ClientConfig: S3ClientConfig = {
             region: process.env.AWS_REGION,
             credentials: {
-                accessKeyId: process.env.AWS_ACCESS_KEY,
-                secretAccessKey: process.env.AWS_SECRET_KEY
+                accessKeyId: process.env.AWS_ACCESS_KEY as string,
+                secretAccessKey: process.env.AWS_SECRET_KEY as string
             }
-        })
+        };
+        this.#s3Client = new S3Client(s3ClientConfig);
     }
-    
-    async putObject(file, filename){
+
+    async putObject(file: Buffer, filename: string){
         try{
             const params = {
                 Bucket: process.env.AWS_S3_BUCKET,
@@ -23,7 +24,7 @@ class awsS3Client {
                 ContentType: "image/jpg,jpeg,png",
             }
             const command = new PutObjectCommand(params);
-            const data = await s3Client.send(command);
+            const data = await this.#s3Client.send(command);
             
             if (data.$metadata.httpStatusCode != 200){
                 return;
@@ -37,14 +38,14 @@ class awsS3Client {
         }
     }
 
-    async getObject(filename){
+    async getObject(filename: string){
         try{
             const params = {
                 Bucket: process.env.AWS_S3_BUCKET,
                 Key: filename,
             }
             const command = new GetObjectCommand(params);
-            const data = await s3Client.send(command);
+            const data = await this.#s3Client.send(command);
             
             if (data.$metadata.httpStatusCode != 200){
                 return;
@@ -56,14 +57,14 @@ class awsS3Client {
         }
     }
 
-    async deleteObject(filename){
+    async deleteObject(filename: string){
         try{
             const params = {
                 Bucket: process.env.AWS_S3_BUCKET,
                 Key: filename,
             }
             const command = new DeleteObjectCommand(params);
-            const data = await s3Client.send(command);
+            const data = await this.#s3Client.send(command);
             console.log(data)
             if (data.$metadata.httpStatusCode != 204){
                 return;
