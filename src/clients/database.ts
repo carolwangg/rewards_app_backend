@@ -19,6 +19,17 @@ class Database {
         const [rows] = await this.#pool.query<MySQLType>(query, params);
         return rows;
     }
+
+    // User types
+    async addUser(id: string, userType: string){
+        try{
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('INSERT INTO user_types (id, user_type) VALUES (?, ?)', [id, userType]);
+            return result;
+        }catch (err){
+            console.error('addUser error:', err);
+            throw err;
+        }
+    }
     
     // Customers
     async getCustomers(){

@@ -32,7 +32,7 @@ router.get('/:id/rewards/:reward_id', async (req, res) => {
 router.post('/create', async(req, res) => {
   const data = req.body;
   const db_result = db.addBusiness(data.businessId, data.email, data.name, data.country);
-  const clerk_result = await clerk.setUserType("business");
+  const userType_result = await db.addUserType(data.businessId, "business");
   try{
     res.status(201).json({message: "Business successfully created", user: "success"});
     console.log("Business created");

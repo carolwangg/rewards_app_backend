@@ -86,10 +86,10 @@ router.post('/create', async(req, res) => {
   const data = req.body;
   try{
     const db_result = await db.addCustomer(data.customerId, data.email, data.country);
-    const clerk_result = await clerk.setUserType("customer");
+    const userType_result = await db.addUserType(data.customerId, "customer");
     res.status(201).json({message: `Customer ${data.customerId} created`, user: "success"});
     console.log("Customer created");
-    console.log("Clerk:"+clerk_result);
+    console.log("Clerk:"+userType_result);
     console.log("MySQL:"+db_result);
   }catch(err){
     res.status(401).json({message: `Customer ${data.customerId} creation error`, user: err});
