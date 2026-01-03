@@ -23,7 +23,7 @@ class Database {
     // Customers
     async getCustomers(){
         try{
-            const rows = await this.query('SELECT * FROM card_app.customers');
+            const rows = await this.query('SELECT * FROM customers');
             return rows;
         }catch (err){
             console.error('getCustomers error:', err);
@@ -33,7 +33,7 @@ class Database {
 
     async getCustomer(id){
         try{
-            const rows = await this.query('SELECT * FROM card_app.customers WHERE id = ?', [id]);
+            const rows = await this.query('SELECT * FROM customers WHERE id = ?', [id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getCustomer error:', err);
@@ -43,7 +43,7 @@ class Database {
 
     // async addCustomer(email, name){
     //     try{
-    //         const result = await this.query('INSERT INTO card_app.customers (email, `name`) VALUES (?, ?)', [email, name]);
+    //         const result = await this.query('INSERT INTO customers (email, `name`) VALUES (?, ?)', [email, name]);
     //         return result;
     //     }catch (err){
     //         console.error('addCustomer error:', err);
@@ -51,9 +51,9 @@ class Database {
     //     }
     // }
 
-    async addCustomer(id, email, country){
+    async addCustomer(id, email, country, language){
         try{
-            const result = await this.query('INSERT INTO card_app.customers (id, email, country) VALUES (?, ?, ?)', [id, email, country]);
+            const result = await this.query('INSERT INTO customers (id, email, country, language) VALUES (?, ?, ?, ?)', [id, email, country, language]);
             return result;
         }catch (err){
             console.error('addCustomer error:', err);
@@ -75,7 +75,7 @@ class Database {
     // Businesses
     async getBusinesses(){
         try{
-            const rows = await this.query('SELECT * FROM card_app.businesses');
+            const rows = await this.query('SELECT * FROM businesses');
             return rows;
         }catch (err){
             console.error('getBusinesses error:', err);
@@ -85,7 +85,7 @@ class Database {
 
     async getBusiness(id){
         try{
-            const rows = await this.query('SELECT * FROM card_app.businesses WHERE id = ?', [id]);
+            const rows = await this.query('SELECT * FROM businesses WHERE id = ?', [id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getBusiness error:', err);
@@ -96,7 +96,7 @@ class Database {
     async getBusinessFromCard(cardId){
         try{
             // If businesses reference cards via `card_id`, select the business for the given card id.
-            const rows = await this.query('SELECT id, name, email, longitude, latitude FROM card_app.businesses WHERE card_id = ?', [cardId]);
+            const rows = await this.query('SELECT id, name, email, longitude, latitude FROM businesses WHERE card_id = ?', [cardId]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getBusinessFromCard error:', err);
@@ -104,19 +104,9 @@ class Database {
         }
     }
 
-    // async addBusiness(email, name, longitude, latitude){
-    //     try{
-    //         const result = await this.query('INSERT INTO card_app.businesses (email, name, longitude, latitude) VALUES (?, ?, ?, ?)', [email, name, longitude, latitude]);
-    //         return result;
-    //     }catch (err){
-    //         console.error('addBusiness error:', err);
-    //         throw err;
-    //     }
-    // }
-
-    async addBusiness(id, email, name, country){
+    async addBusiness(id, email, name, country, language){
         try{
-            const result = await this.query('INSERT INTO card_app.businesses (id, email, name, country) VALUES (?, ?, ?, ?)', [id, email, name, country]);
+            const result = await this.query('INSERT INTO businesses (id, email, name, country, language) VALUES (?, ?, ?, ?, ?)', [id, email, name, country, language]);
             return result;
         }catch (err){
             console.error('addBusiness error:', err);
@@ -124,10 +114,10 @@ class Database {
         }
     }
 
-    async updateBusiness(business_id, email, phone_number, name, description, location){
+    async updateBusiness(business_id, email, phone_number, name, description, street_address){
         try{
-            const command = "UPDATE `card_app`.`businesses` SET `email` = ?, `phone_number` = ?, `name` = ?, `description` = ?, `location` = ? WHERE `id` = ?";
-            const result = await this.query(command, [email, phone_number, name, description, location, business_id]);
+            const command = "UPDATE `card_app`.`businesses` SET `email` = ?, `phone_number` = ?, `name` = ?, `description` = ?, `street_address` = ? WHERE `id` = ?";
+            const result = await this.query(command, [email, phone_number, name, description, street_address, business_id]);
             return result;
         }catch (err){
             console.error('updateBusiness error:', err);
@@ -138,7 +128,7 @@ class Database {
     // Rewards
     async getRewards(){
         try{
-            const rows = await this.query('SELECT * FROM card_app.rewards');
+            const rows = await this.query('SELECT * FROM rewards');
             return rows;
         }catch (err){
             console.error('getRewards error:', err);
@@ -146,9 +136,19 @@ class Database {
         }
     }
 
+    async getRewardsFromBusiness(business_id){
+        try{
+            const rows = await this.query('SELECT * FROM rewards WHERE business_id = ?', [business_id]);
+            return rows;
+        }catch (err){
+            console.error('getRewardsFromBusiness error:', err);
+            throw err;
+        }
+    }
+
     async getReward(id){
         try{
-            const rows = await this.query('SELECT * FROM card_app.rewards WHERE id = ?', [id]);
+            const rows = await this.query('SELECT * FROM rewards WHERE id = ?', [id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getReward error:', err);
@@ -158,7 +158,7 @@ class Database {
 
     async addReward(id, name, points, description, image_url, business_id){
         try{
-            const result = await this.query('INSERT INTO card_app.rewards (id, name, points, description, image_url, business_id) VALUES (?, ?, ?, ?, ?, ?)', [id, name, points, description, image_url, business_id]);
+            const result = await this.query('INSERT INTO rewards (id, name, points, description, image_url, business_id) VALUES (?, ?, ?, ?, ?, ?)', [id, name, points, description, image_url, business_id]);
             return result;
         }catch (err){
             console.error('addReward error:', err);
@@ -180,7 +180,7 @@ class Database {
     // Cards
     async getCards(){
         try{
-            const rows = await this.query('SELECT * FROM card_app.cards');
+            const rows = await this.query('SELECT * FROM cards');
             return rows;
         }catch (err){
             console.error('getCards error:', err);
@@ -190,7 +190,7 @@ class Database {
 
     async getCard(id){
         try{
-            const rows = await this.query('SELECT * FROM card_app.cards WHERE id = ?', [id]);
+            const rows = await this.query('SELECT * FROM cards WHERE id = ?', [id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getCard error:', err);
@@ -200,7 +200,7 @@ class Database {
 
     async addCard(business_id, name){
         try{
-            const result = await this.query('INSERT INTO card_app.cards (id, name) VALUES (?, ?)', [business_id, name]);
+            const result = await this.query('INSERT INTO cards (id, name) VALUES (?, ?)', [business_id, name]);
             return result;
         }catch (err){
             console.error('addCard error:', err);
@@ -221,7 +221,7 @@ class Database {
 
     async getCustomerCards(id){
         try{
-            const rows = await this.query('SELECT id, name, description, image_url, contact_info, points, colour FROM card_app.cards INNER JOIN card_app.customer_cards ON card_app.cards.id = card_app.customer_cards.card_id WHERE customer_id = ?', [id]);
+            const rows = await this.query('SELECT id, name, description, image_url, contact_info, points, colour FROM cards INNER JOIN customer_cards ON cards.id = customer_cards.card_id WHERE customer_id = ?', [id]);
             return rows;
         }catch (err){
             console.error('getCustomerCards error:', err);
@@ -230,7 +230,7 @@ class Database {
     }
     async getCustomerCard(customer_id, card_id){
         try{
-            const rows = await this.query('SELECT id, name, description, contact_info, points FROM card_app.cards INNER JOIN card_app.customer_cards WHERE customer_id = ? AND card_id = ?', [customer_id, card_id]);
+            const rows = await this.query('SELECT id, name, description, contact_info, points FROM cards INNER JOIN customer_cards WHERE customer_id = ? AND card_id = ?', [customer_id, card_id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getCardFromCustomer error:', err);
@@ -239,7 +239,7 @@ class Database {
     }
     async addCustomerCard(customer_id, card_id){
         try{
-            const result = await this.query('INSERT INTO card_app.customer_cards (customer_id, card_id) VALUES (?, ?)', [customer_id, card_id]);
+            const result = await this.query('INSERT INTO customer_cards (customer_id, card_id) VALUES (?, ?)', [customer_id, card_id]);
             return result;
         }catch (err){
             console.error('addCustomerCard error:', err);
@@ -249,7 +249,7 @@ class Database {
 
     async updateCustomerCard(customer_id, card_id, points){
         try{
-            const result = await this.query('UPDATE card_app.customer_cards SET points = ? WHERE customer_id = ? AND card_id = ?', [points, customer_id, card_id]);
+            const result = await this.query('UPDATE customer_cards SET points = ? WHERE customer_id = ? AND card_id = ?', [points, customer_id, card_id]);
             return result;
         }catch (err){
             console.error('updateCustomerCard error:', err);
@@ -261,7 +261,7 @@ class Database {
     async getBusinessRewards(business_id){
         //fetch data in ascending point order
         try{
-            const rows = await this.query('SELECT * FROM card_app.rewards WHERE business_id = ? ORDER BY card_app.rewards.points ASC', [business_id]);
+            const rows = await this.query('SELECT * FROM rewards WHERE business_id = ? ORDER BY rewards.points ASC', [business_id]);
             return rows;
         }catch (err){
             console.error('getBusinessRewards error:', err);
@@ -270,7 +270,7 @@ class Database {
     }
     async getBusinessReward(business_id, reward_id){
         try{
-            const rows = await this.query('SELECT * FROM card_app.rewards WHERE business_id = ? AND id = ?', [business_id, reward_id]);
+            const rows = await this.query('SELECT * FROM rewards WHERE business_id = ? AND id = ?', [business_id, reward_id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getBusinessReward error:', err);

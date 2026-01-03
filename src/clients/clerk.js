@@ -7,6 +7,22 @@ class Clerk {
         dotenv.config();
         clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
     }
+    
+    //user modification
+
+    async createUser(email, userType)  {
+        try {
+            await clerkClient.users.updateUserMetadata(userId, {
+                publicMetadata: {
+                    userType: userType,
+                },
+            });
+        } catch (err) {
+            console.error('createUser error:', err);
+            throw err;
+        }
+    }
+
     async setUserType(userId, userType)  {
         await clerkClient.users.updateUserMetadata(userId, {
             publicMetadata: {
@@ -14,6 +30,7 @@ class Clerk {
             },
         });
     }
+    
 }
 
 export default new Clerk();

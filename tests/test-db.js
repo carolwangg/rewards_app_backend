@@ -1,6 +1,6 @@
-import db from './clients/database.js';
+import db from '../src/clients/database.js';
 
-(async function runTests(){
+async function runTests(){
     try{
         const customers = await db.getCustomers();
         console.log('getCustomers', customers);
@@ -15,9 +15,10 @@ import db from './clients/database.js';
         console.log('getRewards', rewards);
 
         const rewardsForBusiness = await db.getRewardsFromBusiness(1);
-        console.log('getRewardsFromBusiness(1)', rewardsForBusiness);
+        console.log('getRewardsFromBusiness', rewardsForBusiness);
     }catch(err){
         console.error('test-db error', err);
         throw err;
     }
-})();
+}
+await runTests();
