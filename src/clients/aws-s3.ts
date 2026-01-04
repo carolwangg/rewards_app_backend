@@ -1,6 +1,9 @@
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3";
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
+/**
+ * AWS S3 client for file storage operations (only pictures in v0.1.0).
+ */
 class awsS3Client {
     #s3Client: S3Client;
     constructor(){

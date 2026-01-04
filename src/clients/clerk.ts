@@ -1,6 +1,10 @@
 
 import { ClerkClient, createClerkClient } from '@clerk/backend'
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
+
+/**
+ * Clerk client for user management.
+ */
 class Clerk {
     #clerkClient: ClerkClient;
     constructor(){

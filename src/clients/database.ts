@@ -1,8 +1,12 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
+import * as mysql from 'mysql2/promise';
+import * as dotenv from 'dotenv';
+
+/**
+ * Database client for MySQL interactions.
+ */
 class Database {
-    
     #pool: mysql.Pool;
+
     constructor() {
         dotenv.config();
         
@@ -27,6 +31,26 @@ class Database {
             return result;
         }catch (err){
             console.error('addUser error:', err);
+            throw err;
+        }
+    }
+
+    async removeUser(id: string, userType: string){
+        try{
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM user_types WHERE id = ? AND user_type = ?', [id, userType]);
+            return result;
+        }catch (err){
+            console.error('removeUser error:', err);
+            throw err;
+        }
+    }
+
+    async getUserType(id: string){
+        try{
+            const result: mysql.RowDataPacket[] = await this.query<mysql.RowDataPacket[]>('SELECT user_type FROM user_types WHERE id = ?', [id]);
+            return result;
+        }catch (err){
+            console.error('getUserType error:', err);
             throw err;
         }
     }
@@ -69,6 +93,16 @@ class Database {
             return result;
         }catch (err){
             console.error('updateCustomer error:', err);
+            throw err;
+        }
+    }
+
+    async removeCustomer(id: string){
+        try{
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM customers WHERE id = ?', [id]);
+            return result;
+        }catch (err){
+            console.error('removeCustomer error:', err);
             throw err;
         }
     }
@@ -126,6 +160,16 @@ class Database {
         }
     }
 
+    async removeBusiness(id: string){
+        try{
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM businesses WHERE id = ?', [id]);
+            return result;
+        }catch (err){
+            console.error('removeBusiness error:', err);
+            throw err;
+        }
+    }
+
     // Rewards
     async getRewards(){
         try{
@@ -174,6 +218,16 @@ class Database {
             return result;
         }catch (err){
             console.error('updateReward error:', err);
+            throw err;
+        }
+    }
+
+    async removeReward(id: string){
+        try{
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM rewards WHERE id = ?', [id]);
+            return result;
+        }catch (err){
+            console.error('removeReward error:', err);
             throw err;
         }
     }
@@ -258,6 +312,15 @@ class Database {
         }
     }
 
+    async removeCustomerCard(customer_id: string, card_id: string){
+        try{
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM customer_cards WHERE customer_id = ? AND card_id = ?', [customer_id, card_id]);
+            return result;
+        }catch (err){
+            console.error('removeCustomerCard error:', err);
+            throw err;
+        }
+    }
 
     async getBusinessRewards(business_id: string){
         //fetch data in ascending point order
@@ -269,12 +332,27 @@ class Database {
             throw err;
         }
     }
+
     async getBusinessReward(business_id: string, reward_id: string){
         try{
             const rows : mysql.RowDataPacket[] = await this.query('SELECT * FROM rewards WHERE business_id = ? AND id = ?', [business_id, reward_id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getBusinessReward error:', err);
+            throw err;
+        }
+    }
+
+    async removeBusinessRewards(business_id: string){
+        try{
+            const result: mysql.ResultSetHeader[][] = [];
+            const rewards = await this.getBusinessRewards(business_id);
+            for (const reward of rewards){
+                result.push(await this.query('DELETE FROM rewards WHERE business_id = ? AND id = ?', [business_id, reward.id]));
+            }
+            return result;
+        }catch (err){
+            console.error('removeBusinessRewards error:', err);
             throw err;
         }
     }
