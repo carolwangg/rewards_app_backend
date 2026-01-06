@@ -139,9 +139,9 @@ class Database {
         }
     }
 
-    async addBusiness(id: string, email: string, name: string, country: string, language: string){
+    async addBusiness(id: string, email: string, country: string, language: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, name, country, language) VALUES (?, ?, ?, ?, ?)', [id, email, name, country, language]);
+            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, language) VALUES (?, ?, ?, ?)', [id, email, country, language]);
             return result;
         }catch (err){
             console.error('addBusiness error:', err);
@@ -149,10 +149,10 @@ class Database {
         }
     }
 
-    async updateBusiness(business_id: string, email: string, phone_number: string, name: string, description: string, street_address: string){
+    async updateBusiness(business_id: string, email: string, name: string, description: string, street_address: string){
         try{
-            const command = "UPDATE `businesses` SET `email` = ?, `phone_number` = ?, `name` = ?, `description` = ?, `street_address` = ? WHERE `id` = ?";
-            const result: mysql.ResultSetHeader[] = await this.query(command, [email, phone_number, name, description, street_address, business_id]);
+            const command = "UPDATE `businesses` SET `email` = ?, `name` = ?, `description` = ?, `street_address` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [email, name, description, street_address, business_id]);
             return result;
         }catch (err){
             console.error('updateBusiness error:', err);

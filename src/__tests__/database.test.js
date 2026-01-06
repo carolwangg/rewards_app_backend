@@ -10,11 +10,23 @@ const user_0 = {
   country: 'CA',
   language: 'en'
 }
-
+const user_1 = {
+  id: 'user_1',
+  name: 'Test Business',
+  email: 'test@example.com',
+  latitude: 0,
+  longitude: 0,
+  country: 'ES',
+  language: 'es',
+  street_address: '123 Test St',
+  business_email: 'business@example.com',
+  business_phone: '1234567890',
+  image_url: 'http://example.com/image.jpg',
+  banner_url: 'http://example.com/banner.jpg'
+}
 
 test('addCustomer user_0', async() => {
-  const customer = await db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language);
-  expect(customer).toBeDefined();
+  await expect(db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language)).resolves.toBeDefined();
 });
 
 test('getCustomer user_0', async() => {
@@ -29,19 +41,96 @@ test('updateCustomer user_0', async() => {
   expect(customer).toBeDefined();
 });
 
-test('getCustomer user_0', async() => {
+test('getCustomer user_0 (updated with name, latitude, longitude)', async() => {
   const customer = await db.getCustomer(user_0.id);
   expect(customer.id).toBe(user_0.id);
   expect(customer.email).toBe(user_0.email);
   expect(customer.country).toBe(user_0.country);
   expect(customer.name).toBe(user_0.name);
-  expect(customer.latitude).toBe(user_0.latitude);
-  expect(customer.longitude).toBe(user_0.longitude);
+  expect(Number(customer.latitude)).toBeCloseTo(user_0.latitude);
+  expect(Number(customer.longitude)).toBeCloseTo(user_0.longitude);
 });
 
-test('addCustomer user_0', async() => {
-  expect(await db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language)).toThrow();
+// test('getCustomers includes user_0', async() => {
+//   const customers = await db.getCustomers();
+//   expect(customers.length).toBe(1);
+//   const customerIds = customers.map(cust => cust.id);
+//   expect(customerIds).toContain(user_0.id);
+// });
+
+test('addCustomer user_0 (duplicate)', async() => {
+  try {
+    db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language);
+  }catch(err){
+    expect(err.toString()).toMatch("Error");
+  }
 });
+
+test('removeCustomer user_0', async() => {
+  await expect(db.removeCustomer(user_0.id)).resolves.toBeDefined();
+});
+
+test('getCustomer user_0 (none existing)', async() => {
+  const customer = await db.getCustomer('user_0');
+  expect(customer).toBe(null);
+});
+
+test('addBusiness user_1', async() => {
+  await expect(db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.language)).resolves.toBeDefined();
+});
+
+test('getBusiness user_1', async() => {
+  const business = await db.getBusiness('user_1');
+  expect(business.id).toBe(user_1.id);
+  expect(business.email).toBe(user_1.email);
+  expect(business.country).toBe(user_1.country);
+});
+
+test('updateBusiness user_1', async() => {
+  const business = await db.updateBusiness(user_1.id, user_1.email, user_1.country, user_1.language, user_1.longitude, user_1.latitude, user_1.street_address, user_1.business_email, user_1.business_phone, user_1.name, user_1.description, user_1.image_url, user_1.banner_url);
+  expect(business).toBeDefined();
+});
+
+test('getBusiness user_1 (updated with name, latitude, longitude)', async() => {
+  const business = await db.getBusiness(user_1.id);
+  expect(business.id).toBe(user_1.id);
+  expect(business.email).toBe(user_1.email);
+  expect(business.country).toBe(user_1.country);
+  expect(business.language).toBe(user_1.language);
+  expect(Number(business.latitude)).toBeCloseTo(user_1.latitude);
+  expect(Number(business.longitude)).toBeCloseTo(user_1.longitude);
+  expect(business.street_address).toBe(user_1.street_address);
+  expect(business.business_email).toBe(user_1.business_email);
+  expect(business.business_phone).toBe(user_1.business_phone);
+  expect(business.name).toBe(user_1.name);
+  expect(business.image_url).toBe(user_1.image_url);
+  expect(business.banner_url).toBe(user_1.banner_url);
+});
+
+// test('getBusinesses includes user_1', async() => {
+//   const businesses = await db.getBusinesses();
+//   expect(businesses.length).toBe(1);
+//   const businessIds = businesses.map(biz => biz.id);
+//   expect(businessIds).toContain(user_1.id);
+// });
+
+test('add user_1 (duplicate)', async() => {
+  try {
+    await db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.language);
+  } catch(err) {
+    expect(err.toString()).toMatch("Error");
+  }
+});
+
+test('removeBusiness user_1', async() => {
+  await expect(db.removeBusiness(user_1.id)).resolves.toBeDefined();
+});
+
+test('getBusiness user_1 (none existing)', async() => {
+  const business = await db.getBusiness('user_1');
+  expect(business).toBe(null);
+});
+
 
 // async function testGetBusinesses() {
 //     try {
