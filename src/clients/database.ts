@@ -9,7 +9,6 @@ class Database {
 
     constructor() {
         dotenv.config();
-        
         this.#pool = mysql.createPool({
             host: process.env.MYSQL_HOST,
             port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT) : 3306,
@@ -86,10 +85,10 @@ class Database {
         }
     }
 
-    async updateCustomer(customer_id: string, email: string, name: string, longitude: number, latitude: number){
+    async updateCustomer(customer_id: string, email: string = null, name: string = null, longitude: number = null, latitude: number = null, street_address: string = null, image_url: string = null){
         try{
-            const command = "UPDATE `customers` SET `email` = ?, `name` = ?, `longitude` = ?, `latitude` = ? WHERE `id` = ?";
-            const result: mysql.ResultSetHeader[] = await this.query(command, [email, name, longitude, latitude, customer_id]);
+            const command = "UPDATE `customers` SET `email` = ?, `name` = ?, `longitude` = ?, `latitude` = ?, `street_address` = ?, `image_url` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [email, name, longitude, latitude, street_address, image_url, customer_id]);
             return result;
         }catch (err){
             console.error('updateCustomer error:', err);
@@ -139,9 +138,9 @@ class Database {
         }
     }
 
-    async addBusiness(id: string, email: string, name: string, country: string, language: string){
+    async addBusiness(id: string, email: string, country: string, language: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, name, country, language) VALUES (?, ?, ?, ?, ?)', [id, email, name, country, language]);
+            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, language) VALUES (?, ?, ?, ?)', [id, email, country, language]);
             return result;
         }catch (err){
             console.error('addBusiness error:', err);
@@ -149,10 +148,11 @@ class Database {
         }
     }
 
-    async updateBusiness(business_id: string, email: string, phone_number: string, name: string, description: string, street_address: string){
+    async updateBusiness(business_id: string = null, email: string = null, country: string = null, language: string = null, longitude: number = null, latitude: number = null, street_address: string = null, 
+        business_email: string = null, business_phone: string = null, name: string = null, description: string = null, image_url: string = null, banner_url: string = null){
         try{
-            const command = "UPDATE `businesses` SET `email` = ?, `phone_number` = ?, `name` = ?, `description` = ?, `street_address` = ? WHERE `id` = ?";
-            const result: mysql.ResultSetHeader[] = await this.query(command, [email, phone_number, name, description, street_address, business_id]);
+            const command = "UPDATE `businesses` SET `email` = ?, `country` = ?, `language` = ?, `longitude` = ?, `latitude` = ?, `street_address` = ?, `business_email` = ?, `business_phone` = ?, `name` = ?, `description` = ?, `image_url` = ?, `banner_url` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [email, country, language, longitude, latitude, street_address, business_email, business_phone, name, description, image_url, banner_url, business_id]);
             return result;
         }catch (err){
             console.error('updateBusiness error:', err);
@@ -360,8 +360,39 @@ class Database {
 
 export default new Database();
 
-// const customers = await addCustomer("Test", "test@example.com");
-// console.log(customers);
-// const db = new Database();
-// const result: mysql.ResultSetHeader[] = await db.updateCustomerCard("user_3631ytWKA51u1CLDkuuppqtu8LZ", "user_363Tl64h2sSxQH3jKLIWBPpZEYg", 1);
-// console.log(result);
+// For manual testing
+// if (import.meta.main) {
+//     const user_0 = {
+//     id: 'user_0',
+//     name: 'Test User',
+//     email: 'test@example.com',
+//     latitude: 0,
+//     longitude: 0,
+//     country: 'CA',
+//     language: 'en'
+//     }
+
+//     const user_1 = {
+//     id: 'user_1',
+//     name: 'Test Business',
+//     email: 'test@example.com',
+//     latitude: 0,
+//     longitude: 0,
+//     country: 'ES',
+//     language: 'es',
+//     street_address: '123 Test St',
+//     business_email: 'business@example.com',
+//     business_phone: '1234567890',
+//     image_url: 'http://example.com/image.jpg',
+//     banner_url: 'http://example.com/banner.jpg'
+//     }
+
+//     const db = new Database();
+//     // const result?: mysql.RowDataPacket[] = await db.getCustomers();
+//     // console.log(result);
+//     // await db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language);
+//     // await db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language);
+//     // console.log("here");
+//     const result = await db.removeCustomer(user_0.id);
+//     console.log(result);
+// }

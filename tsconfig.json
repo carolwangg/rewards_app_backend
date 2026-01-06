@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "moduleResolution": "nodenext",
+    "module": "nodenext",
+    "baseUrl": "src", // Root directory for absolute paths
+    "paths": {
+      "@clients/*": ["clients/*"], // Maps "@clients/database" to "src/clients/database"
+      "@routes/*": ["routes/*"] 
+    },
+  },
+  "include": ["src"]
+}
