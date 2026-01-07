@@ -1,6 +1,6 @@
 import { Router, json, urlencoded } from 'express';
-import db from "../clients/database.js";
-import awsS3 from '../clients/aws-s3.js';
+import db from "../clients/database.ts";
+import awsS3 from '../clients/aws-s3.ts';
 import fileUpload from 'express-fileupload';
 import { randomUUID } from "node:crypto";
 

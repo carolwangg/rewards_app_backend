@@ -1,4 +1,4 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import * as dotenv from 'dotenv';
 
 /**
@@ -8,7 +8,7 @@ class awsS3Client {
     #s3Client: S3Client;
     constructor(){
         dotenv.config();
-        const s3ClientConfig: S3ClientConfig = {
+        const s3ClientConfig: any = {
             region: process.env.AWS_REGION,
             credentials: {
                 accessKeyId: process.env.AWS_ACCESS_KEY as string,

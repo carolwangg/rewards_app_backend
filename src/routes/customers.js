@@ -1,5 +1,5 @@
 import { Router, json, urlencoded } from 'express';
-import db from "../clients/database.js";
+import db from "../clients/database.ts";
 
 const router = Router();
 router.use(json());
@@ -83,17 +83,18 @@ router.get('/create', (req, res) => {
 
 router.post('/create', async(req, res) => {
   const data = req.body;
-  try{
-    const db_result = await db.addCustomer(data.id, data.email, data.country);
-    const db_userType_result = await db.addUserType(data.id, "customer");
-    res.status(201).json({message: `Customer ${data.id} created`, user: "success"});
-    console.log("Customer created");
-    console.log("MySQL:"+db_result);
-    console.log("UserType:"+db_userType_result);
-  }catch(err){
-    res.status(401).json({message: `Customer ${data.id} creation error`, user: err});
-    console.log("Customer creation error"+err);
-  }  
+  res.status(401).json({message: `Customer ${data.id} creation error`, user: err});
+  // try{
+  //   const db_result = await db.addCustomer(data.id, data.email, data.country);
+  //   const db_userType_result = await db.addUserType(data.id, "customer");
+  //   res.status(201).json({message: `Customer ${data.id} created`, user: "success"});
+  //   console.log("Customer created");
+  //   console.log("MySQL:"+db_result);
+  //   console.log("UserType:"+db_userType_result);
+  // }catch(err){
+  //   res.status(401).json({message: `Customer ${data.id} creation error`, user: err});
+  //   console.log("Customer creation error"+err);
+  // }  
 });
 
 router.get('/:id/update', async(req, res) => {

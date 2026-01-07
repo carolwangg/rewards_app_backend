@@ -1,6 +1,5 @@
 import { Router, json, urlencoded } from 'express';
-import db from "../clients/database.js";
-import clerk from "../clients/clerk.js";
+import db from "../clients/database.ts";
 
 const router = Router();
 router.use(json());

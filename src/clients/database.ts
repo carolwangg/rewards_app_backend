@@ -97,10 +97,10 @@ class Database {
         }
     }
 
-    async updateCustomer(customer_id: string, email: string, name: string, longitude: number, latitude: number, street_address: string, image_url: string){
+    async updateCustomer(customer_id: string, email: string, country: string, name: string, longitude: number, latitude: number, street_address: string, image_url: string){
         try{
-            const command = "UPDATE `customers` SET `email` = ?, `name` = ?, `longitude` = ?, `latitude` = ?, `street_address` = ?, `image_url` = ? WHERE `id` = ?";
-            const result: mysql.ResultSetHeader[] = await this.query(command, [email, name, longitude, latitude, street_address, image_url, customer_id]);
+            const command = "UPDATE `customers` SET `email` = ?, `country` = ?, `name` = ?, `longitude` = ?, `latitude` = ?, `street_address` = ?, `image_url` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [email, country, name, longitude, latitude, street_address, image_url, customer_id]);
             return result;
         }catch (err){
             console.error('updateCustomer error:', err);
