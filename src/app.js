@@ -6,7 +6,7 @@ import cardsRouter from './routes/cards.js';
 import userRouter from './routes/users.js';
 import cors from 'cors';
 
-const app = express();
+export const app = express();
 const port = 8080;
 
 //ONLY FOR TESTING
@@ -17,6 +17,7 @@ app.use((req, res, next) => {
   console.log(`[${req.method}] ${req.path}`);
   next();
 });
+
 app.use('/customers', customerRouter);
 app.use('/businesses', businessesRouter);
 app.use('/rewards', rewardsRouter);
@@ -25,6 +26,8 @@ app.use('/users', userRouter);
 app.get('/', (req, res) => {
   res.status(201).json({ message: 'Server Up', user: req.body });
 });
+
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 });
+

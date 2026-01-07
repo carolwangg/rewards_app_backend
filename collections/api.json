@@ -1,0 +1,569 @@
+{
+  "info": {
+    "name": "app.js",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "/",
+      "item": [
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        },
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        },
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        },
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        },
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        },
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": ":id",
+      "item": [
+        {
+          "name": "GET /:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id/cards/",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/cards/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "cards"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id/cards/:card_id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/cards/:card_id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "cards",
+                ":card_id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id/cards/:card_id/rewards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/cards/:card_id/rewards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "cards",
+                ":card_id",
+                "rewards"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id/rewards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/rewards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "rewards"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id/update",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/update",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "update"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /:id/update",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/update",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "update"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /:id/cards/create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/cards/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "cards",
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /:id/cards/:card_id/add-points",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/cards/:card_id/add-points",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "cards",
+                ":card_id",
+                "add-points"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id/rewards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/rewards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "rewards"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id/rewards/:reward_id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/rewards/:reward_id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "rewards",
+                ":reward_id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /:id/update",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/update",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "update"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /:id/update",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/update",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "update"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /:id/delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/:id/delete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ":id",
+                "delete"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "create",
+      "item": [
+        {
+          "name": "GET /create",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /create",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /create",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update",
+      "item": [
+        {
+          "name": "POST /update",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/update",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "update"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "redeem",
+      "item": [
+        {
+          "name": "POST /redeem",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/redeem",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "redeem"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
