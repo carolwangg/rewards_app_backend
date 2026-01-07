@@ -44,7 +44,7 @@ router.post('/create', async(req, res) => {
     const putObjectResult = await awsS3.putObject(image.data, file_name);
     const image_url = putObjectResult.url;
     console.log("image url:" + image_url)
-    const success = await db.addReward(id, data.name, data.points, data.description, image_url, data.business_id);
+    const success = await db.addReward(id, data.name, data.description, image_url, data.points, data.business_id);
     console.log(success);
     res.status(201).json({ message: 'Reward created', user: req.body });
     console.log("Reward created");

@@ -17,7 +17,6 @@ router.get('/:id', async (req, res) => {
   res.status(200).send({user: business});
 });
 
-
 router.get('/:id/rewards', async (req, res) => {
   const rewards = await db.getBusinessRewards(req.params.id);
   res.status(200).json({message: "Rewards fetched for business", user: rewards});
@@ -25,14 +24,17 @@ router.get('/:id/rewards', async (req, res) => {
 });
 
 router.get('/:id/rewards/:reward_id', async (req, res) => {
-  const reward = await db.getBusinessRewards(req.params.id, req.params.reward_id);
+  const reward = await db.getBusinessReward(req.params.id, req.params.reward_id);
   res.status(200).send(reward);
 });
 
 router.post('/create', async(req, res) => {
   const data = req.body;
-  const db_result = db.addBusiness(data.businessId, data.email, data.name, data.country);
-  const userType_result = await db.addUserType(data.businessId, "business");
+  let db_result = await db.addBusiness(data.businessId, data.email, data.country, data.name);
+  const db_userType_result = await db.addUserType(data.businessId, "business");
+  console.log("Business created");
+  console.log("MySQL:"+db_result);
+  console.log("UserType:"+db_userType_result);
   try{
     res.status(201).json({message: "Business successfully created", user: "success"});
     console.log("Business created");
@@ -45,7 +47,8 @@ router.post('/create', async(req, res) => {
 router.post('/:id/update', async(req, res) => {
   const businessId = req.params.id;
   const data = req.body;
-  const result = db.updateBusiness(businessId, data.email, data.phoneNumber, data.name, data.description, data.location);
+  const result = await db.updateBusiness(data.id, data.email, data.country, data.longitude, data.latitude, data.street_address, data.business_email, data.business_phone, data.name, data.description, data.image_url, data.banner_url, data.rating);
+
   try{
     res.status(200).json({message: "Business successfully updated", user: "success"});
     console.log("Business updated");

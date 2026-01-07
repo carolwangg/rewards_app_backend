@@ -1,5 +1,9 @@
+/**
+ * Test suite for database client functions using Jest.
+ * @author carolwangg
+ * @version 1.0.0
+ */
 const db = require('clients/database.ts').default;
-// import assert from 'assert';
 
 const user_0 = {
   id: 'user_0',
@@ -8,8 +12,10 @@ const user_0 = {
   latitude: 0,
   longitude: 0,
   country: 'CA',
-  language: 'en'
+  street_address: '123 Test St',
+  image_url: 'http://example.com/image.jpg'
 }
+
 const user_1 = {
   id: 'user_1',
   name: 'Test Business',
@@ -17,7 +23,6 @@ const user_1 = {
   latitude: 0,
   longitude: 0,
   country: 'ES',
-  language: 'es',
   street_address: '123 Test St',
   business_email: 'business@example.com',
   business_phone: '1234567890',
@@ -25,8 +30,73 @@ const user_1 = {
   banner_url: 'http://example.com/banner.jpg'
 }
 
+const card_1 = {
+  id: 'user_1',
+  name: 'Test Card',
+  description: 'Test Description',
+  contact_info: 'Test Contact Info',
+  image_url: 'http://example.com/card.jpg',
+  colour: 'ff0000',
+}
+
+const card_0 = {
+  customer_id: 'user_0',
+  card_id: 'user_1',
+  points: 0
+}
+
+const reward_1 = {
+  id: '1',
+  name: 'Test Reward',
+  description: 'Test Description',
+  image_url: 'http://example.com/reward.jpg',
+  points: 100,
+  business_id: 'user_1'
+}
+
+test('getUsers empty', async() => {
+  const users = await db.getUsers();
+  expect(users.length).toBe(0);
+});
+
+test('getCustomers empty', async() => {
+  const customers = await db.getCustomers();
+  expect(customers.length).toBe(0);
+});
+
+test('getBusinesses empty', async() => {
+  const businesses = await db.getBusinesses();
+  expect(businesses.length).toBe(0);
+});
+
+test('getCards empty', async() => {
+  const cards = await db.getCards();
+  expect(cards.length).toBe(0);
+});
+
+test('getRewards empty', async() => {
+  const rewards = await db.getRewards();
+  expect(rewards.length).toBe(0);
+});
+
+test('addUser user_0 (customer)', async() => {
+  await expect(db.addUser(user_0.id, 'customer')).resolves.toBeDefined();
+});
+
+test('getUserType user_0 to be customer', async() => {
+  await expect(db.getUserType(user_0.id)).resolves.toBe('customer');
+});
+
+test('removeUser user_0', async() => {
+  await expect(db.removeUser(user_0.id)).resolves.toBeDefined();
+});
+
+test('getUserType user_0 (none existing) return null', async() => {
+  await expect(db.getUserType(user_0.id)).resolves.toBe(null);
+});
+
 test('addCustomer user_0', async() => {
-  await expect(db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language)).resolves.toBeDefined();
+  await expect(db.addCustomer(user_0.id, user_0.email, user_0.country)).resolves.toBeDefined();
 });
 
 test('getCustomer user_0', async() => {
@@ -37,7 +107,7 @@ test('getCustomer user_0', async() => {
 });
 
 test('updateCustomer user_0', async() => {
-  const customer = await db.updateCustomer(user_0.id, user_0.email, user_0.name, user_0.latitude, user_0.longitude);
+  const customer = await db.updateCustomer(user_0.id, user_0.email, user_0.country, user_0.name, user_0.latitude, user_0.longitude, user_0.street_address, user_0.image_url);
   expect(customer).toBeDefined();
 });
 
@@ -49,18 +119,20 @@ test('getCustomer user_0 (updated with name, latitude, longitude)', async() => {
   expect(customer.name).toBe(user_0.name);
   expect(Number(customer.latitude)).toBeCloseTo(user_0.latitude);
   expect(Number(customer.longitude)).toBeCloseTo(user_0.longitude);
+  expect(customer.street_address).toBe(user_0.street_address);
+  expect(customer.image_url).toBe(user_0.image_url);
 });
 
-// test('getCustomers includes user_0', async() => {
-//   const customers = await db.getCustomers();
-//   expect(customers.length).toBe(1);
-//   const customerIds = customers.map(cust => cust.id);
-//   expect(customerIds).toContain(user_0.id);
-// });
+test('getCustomers includes user_0', async() => {
+  const customers = await db.getCustomers();
+  expect(customers.length).toBe(1);
+  const customerIds = customers.map(cust => cust.id);
+  expect(customerIds).toContain(user_0.id);
+});
 
 test('addCustomer user_0 (duplicate)', async() => {
   try {
-    db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language);
+    await db.addCustomer(user_0.id, user_0.email, user_0.country);
   }catch(err){
     expect(err.toString()).toMatch("Error");
   }
@@ -76,7 +148,7 @@ test('getCustomer user_0 (none existing)', async() => {
 });
 
 test('addBusiness user_1', async() => {
-  await expect(db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.language)).resolves.toBeDefined();
+  await expect(db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name)).resolves.toBeDefined();
 });
 
 test('getBusiness user_1', async() => {
@@ -84,10 +156,11 @@ test('getBusiness user_1', async() => {
   expect(business.id).toBe(user_1.id);
   expect(business.email).toBe(user_1.email);
   expect(business.country).toBe(user_1.country);
+  expect(business.name).toBe(user_1.name);
 });
 
 test('updateBusiness user_1', async() => {
-  const business = await db.updateBusiness(user_1.id, user_1.email, user_1.country, user_1.language, user_1.longitude, user_1.latitude, user_1.street_address, user_1.business_email, user_1.business_phone, user_1.name, user_1.description, user_1.image_url, user_1.banner_url);
+  const business = await db.updateBusiness(user_1.id, user_1.email, user_1.country, user_1.longitude, user_1.latitude, user_1.street_address, user_1.business_email, user_1.business_phone, user_1.name, user_1.description, user_1.image_url, user_1.banner_url);
   expect(business).toBeDefined();
 });
 
@@ -96,7 +169,6 @@ test('getBusiness user_1 (updated with name, latitude, longitude)', async() => {
   expect(business.id).toBe(user_1.id);
   expect(business.email).toBe(user_1.email);
   expect(business.country).toBe(user_1.country);
-  expect(business.language).toBe(user_1.language);
   expect(Number(business.latitude)).toBeCloseTo(user_1.latitude);
   expect(Number(business.longitude)).toBeCloseTo(user_1.longitude);
   expect(business.street_address).toBe(user_1.street_address);
@@ -107,16 +179,16 @@ test('getBusiness user_1 (updated with name, latitude, longitude)', async() => {
   expect(business.banner_url).toBe(user_1.banner_url);
 });
 
-// test('getBusinesses includes user_1', async() => {
-//   const businesses = await db.getBusinesses();
-//   expect(businesses.length).toBe(1);
-//   const businessIds = businesses.map(biz => biz.id);
-//   expect(businessIds).toContain(user_1.id);
-// });
+test('getBusinesses includes user_1', async() => {
+  const businesses = await db.getBusinesses();
+  expect(businesses.length).toBe(1);
+  const businessIds = businesses.map(biz => biz.id);
+  expect(businessIds).toContain(user_1.id);
+});
 
 test('add user_1 (duplicate)', async() => {
   try {
-    await db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.language);
+    await db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name);
   } catch(err) {
     expect(err.toString()).toMatch("Error");
   }
@@ -131,24 +203,192 @@ test('getBusiness user_1 (none existing)', async() => {
   expect(business).toBe(null);
 });
 
+test('addCard without business (should fail)', async() => {
+  await expect(db.addCard(card_1.id, card_1.name)).rejects.toThrow();
+});
 
-// async function testGetBusinesses() {
-//     try {
-//         const businesses = await db.getBusinesses();
-//         console.log('testGetBusinesses passed:', businesses.length, 'businesses');
-//     } catch (err) {
-//         console.error('testGetBusinesses failed:', err);
-//     }
-// }
+test('addReward without business (should fail)', async() => {
+  await expect(db.addReward(reward_1.id, reward_1.name, reward_1.description, reward_1.image_url, reward_1.points, reward_1.business_id)).rejects.toThrow();
+});
 
-// async function testGetBusiness() {
-//     try {
-//         const business = await db.getBusiness('dummy_id');
-//         console.log('testGetBusiness passed:', business);
-//     } catch (err) {
-//         console.error('testGetBusiness failed:', err);
-//     }
-// }
+test('addCustomer user_0 and addBusiness user_1 for further tests', async() => {
+  await expect(db.addCustomer(user_0.id, user_0.email, user_0.country)).resolves.toBeDefined();
+  await expect(db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name)).resolves.toBeDefined();
+});
+
+test('addCard with valid business', async() => {
+  await expect(db.addCard(card_1.id, card_1.name)).resolves.toBeDefined();
+});
+
+test('getCards includes new card', async() => {
+  const cards = await db.getCards();
+  expect(cards.length).toBe(1);
+  const cardNames = cards.map(card => card.name);
+  expect(cardNames).toContain(card_1.name);
+});
+
+test('getCard card_1', async() => {
+  const card = await db.getCard(card_1.id);
+  expect(card.name).toBe(card_1.name);
+});
+
+test('updateCard card_1', async() => {
+  const updatedCard = await db.updateCard(card_1.id, 'Updated Card Name', card_1.description, card_1.contact_info, card_1.image_url, card_1.colour);
+  expect(updatedCard).toBeDefined();
+});
+
+test('getCard card_1 (after update)', async() => {
+  const card = await db.getCard(card_1.id);
+  expect(card.name).toBe('Updated Card Name');  
+  expect(card.description).toBe(card_1.description);
+  expect(card.contact_info).toBe(card_1.contact_info);
+  expect(card.image_url).toBe(card_1.image_url);
+  expect(card.colour).toBe(card_1.colour);
+});
+
+test('removeCard card_1', async() => {
+  await expect(db.removeCard(card_1.id)).resolves.toBeDefined();
+});
+
+test('getCards empty after removal', async() => {
+  const cards = await db.getCards();
+  expect(cards.length).toBe(0);
+});
+
+test('addReward with valid business', async() => {
+  await expect(db.addReward(reward_1.id, reward_1.name, reward_1.description, reward_1.image_url, reward_1.points, reward_1.business_id)).resolves.toBeDefined();
+});
+
+test('getRewards includes new reward', async() => {
+  const rewards = await db.getRewards();
+  expect(rewards.length).toBe(1);
+  const rewardNames = rewards.map(reward => reward.name);
+  expect(rewardNames).toContain(reward_1.name);
+});
+
+test('getReward reward_1', async() => {
+  const reward = await db.getReward(reward_1.id);
+  expect(reward.name).toBe(reward_1.name);
+  expect(reward.description).toBe(reward_1.description);
+  expect(reward.image_url).toBe(reward_1.image_url);
+  expect(reward.points).toBe(reward_1.points);
+  expect(reward.business_id).toBe(reward_1.business_id);
+});
+
+test('updateReward reward_1', async() => {
+  const updatedReward = await db.updateReward(reward_1.id, 'Updated Reward Name', 'Updated Description', 'http://example.com/updated_reward.jpg', 200);
+  expect(updatedReward).toBeDefined();
+});
+
+test('getReward reward_1 (after update)', async() => {
+  const reward = await db.getReward(reward_1.id);
+  expect(reward.name).toBe('Updated Reward Name');
+  expect(reward.description).toBe('Updated Description');
+  expect(reward.image_url).toBe('http://example.com/updated_reward.jpg');
+  expect(reward.points).toBe(200);
+  expect(reward.business_id).toBe(reward_1.business_id);
+});
+
+test('getBusinessRewards for user_1 includes reward_1', async() => {
+  const businessRewards = await db.getBusinessRewards(reward_1.business_id);
+  expect(businessRewards.length).toBe(1);
+  const rewardIds = businessRewards.map(reward => reward.id);
+  expect(rewardIds).toContain(reward_1.id);
+});
+
+test('getBusinessReward user_1 reward_1', async() => {
+  const businessReward = await db.getBusinessReward(reward_1.business_id, reward_1.id);
+  expect(businessReward.id).toBe(reward_1.id);
+  expect(businessReward.name).toBe('Updated Reward Name');
+  expect(businessReward.description).toBe('Updated Description');
+  expect(businessReward.image_url).toBe('http://example.com/updated_reward.jpg');
+  expect(businessReward.points).toBe(200);
+  expect(businessReward.business_id).toBe(reward_1.business_id);
+});
+
+test('removeReward reward_1', async() => {
+  await expect(db.removeReward(reward_1.id)).resolves.toBeDefined();
+});
+
+test('getRewards empty after removal', async() => {
+  const rewards = await db.getRewards();
+  expect(rewards.length).toBe(0);
+});
+
+test('addReward reward_1 (setup for removeBusinessRewards test)', async() => {
+  await expect(db.addReward(reward_1.id, reward_1.name, reward_1.description, reward_1.image_url, reward_1.points, reward_1.business_id)).resolves.toBeDefined();
+});
+
+test('removeBusinessRewards for user_1', async() => {
+  await expect(db.removeBusinessRewards(reward_1.business_id)).resolves.toBeDefined();
+});
+
+test('getRewards empty after removeBusinessRewards', async() => {
+  const rewards = await db.getRewards();
+  expect(rewards.length).toBe(0);
+});
+
+test('addCard + updateCard card_1 (setup for customerCard tests)', async() => {
+  await expect(db.addCard(card_1.id, card_1.name)).resolves.toBeDefined();
+  await expect(db.updateCard(card_1.id, card_1.name, card_1.description, card_1.contact_info, card_1.image_url, card_1.colour)).resolves.toBeDefined();
+});
+
+test('addCustomerCard card_0', async() => {
+  await expect(db.addCustomerCard(card_0.customer_id, card_0.card_id)).resolves.toBeDefined();
+});
+
+test('getCustomerCards for user_0 includes card_1', async() => {
+  const customerCards = await db.getCustomerCards(card_0.customer_id);
+  expect(customerCards.length).toBe(1);
+  const cardIds = customerCards.map(custCard => custCard.id);
+  expect(cardIds[0]).toBe(card_0.card_id);
+});
+
+test('getCustomerCard card_0', async() => {
+  const customerCard = await db.getCustomerCard(card_0.customer_id, card_0.card_id);
+  expect(customerCard.id).toBe(card_0.card_id);
+  expect(customerCard.name).toBe(card_1.name);
+  expect(customerCard.description).toBe(card_1.description);
+  expect(customerCard.colour).toBe(card_1.colour);
+  expect(customerCard.contact_info).toBe(card_1.contact_info);
+  expect(customerCard.points).toBe(0);
+  expect(customerCard.colour).toBe(card_1.colour);
+});
+
+test('updateCustomerCard card_0', async() => {
+  const updatedCustomerCard = await db.updateCustomerCard(card_0.customer_id, card_0.card_id, 50);
+  expect(updatedCustomerCard).toBeDefined();
+});
+
+test('getCustomerCard card_0 (after update)', async() => {
+  const customerCard = await db.getCustomerCard(card_0.customer_id, card_0.card_id);
+  expect(customerCard.points).toBe(50);
+});
+
+test('removeCustomerCard card_0', async() => {
+  await expect(db.removeCustomerCard(card_0.customer_id, card_0.card_id)).resolves.toBeDefined();
+});
+
+test('getCustomerCards for user_0 empty after removal', async() => {
+  const customerCards = await db.getCustomerCards(card_0.customer_id);
+  expect(customerCards.length).toBe(0);
+});
+
+test('removeCard card_1 (cleanup)', async() => {
+  await expect(db.removeCard(card_1.id)).resolves.toBeDefined();
+});
+
+test('removeBusiness user_0 and user_1 (cleanup)', async() => {
+  await expect(db.removeCustomer(user_0.id)).resolves.toBeDefined();
+  await expect(db.removeBusiness(user_1.id)).resolves.toBeDefined();
+}); 
+
+
+// at this point there are no users
+// try adding business cards/rewards (fail for no valid business id), and customer cards (fail for no valid customer/card id)
+// then add business + customer -> add business card -> add business reward -> add customer card
+
+
 
 // async function testGetBusinessFromCard() {
 //     try {
@@ -156,33 +396,6 @@ test('getBusiness user_1 (none existing)', async() => {
 //         console.log('testGetBusinessFromCard passed:', business);
 //     } catch (err) {
 //         console.error('testGetBusinessFromCard failed:', err);
-//     }
-// }
-
-// async function testAddBusiness() {
-//     try {
-//         const result = await db.addBusiness('dummy_id', 'business@example.com', 'Test Business', 'US', 'en');
-//         console.log('testAddBusiness passed:', result);
-//     } catch (err) {
-//         console.error('testAddBusiness failed:', err);
-//     }
-// }
-
-// async function testUpdateBusiness() {
-//     try {
-//         const result = await db.updateBusiness('dummy_id', 'new@example.com', '1234567890', 'New Name', 'Description', 'Address');
-//         console.log('testUpdateBusiness passed:', result);
-//     } catch (err) {
-//         console.error('testUpdateBusiness failed:', err);
-//     }
-// }
-
-// async function testGetRewards() {
-//     try {
-//         const rewards = await db.getRewards();
-//         console.log('testGetRewards passed:', rewards.length, 'rewards');
-//     } catch (err) {
-//         console.error('testGetRewards failed:', err);
 //     }
 // }
 

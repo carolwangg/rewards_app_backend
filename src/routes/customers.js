@@ -1,6 +1,5 @@
 import { Router, json, urlencoded } from 'express';
 import db from "../clients/database.js";
-import clerk from "../clients/clerk.js";
 
 const router = Router();
 router.use(json());
@@ -85,14 +84,14 @@ router.get('/create', (req, res) => {
 router.post('/create', async(req, res) => {
   const data = req.body;
   try{
-    const db_result = await db.addCustomer(data.customerId, data.email, data.country);
-    const userType_result = await db.addUserType(data.customerId, "customer");
-    res.status(201).json({message: `Customer ${data.customerId} created`, user: "success"});
+    const db_result = await db.addCustomer(data.id, data.email, data.country);
+    const db_userType_result = await db.addUserType(data.id, "customer");
+    res.status(201).json({message: `Customer ${data.id} created`, user: "success"});
     console.log("Customer created");
-    console.log("Clerk:"+userType_result);
     console.log("MySQL:"+db_result);
+    console.log("UserType:"+db_userType_result);
   }catch(err){
-    res.status(401).json({message: `Customer ${data.customerId} creation error`, user: err});
+    res.status(401).json({message: `Customer ${data.id} creation error`, user: err});
     console.log("Customer creation error"+err);
   }  
 });
@@ -100,12 +99,13 @@ router.post('/create', async(req, res) => {
 router.get('/:id/update', async(req, res) => {
   res.status(200).json({ message: 'customer update endpoint', user: "success" });
 });
+
 router.post('/:id/update', async(req, res) => {
   console.log("updating customer")
   const data = req.body;
   const customerId = req.params.id;
   try{
-    const result = await db.updateCustomer(customerId, data.email, data.name, data.longitude, data.latidude);
+    const result = await db.updateCustomer(customerId, data.email, data.country, data.name, data.longitude, data.latitude, data.street_address, data.image_url);
     res.status(200).json({message: `Customer ${customerId} updated`, user: "success"});
     console.log("Customer updated");
     console.log(result);

@@ -46,7 +46,7 @@ router.post('/:id/update', async(req, res) => {
     res.status(400).json({ message: 'Card does not exist', user: req.body });
     console.log("Card does not exist");
   }else{
-    const success = db.updateCard(cardId, data.name, data.description, data.imageUrl, data.contactInfo, data.colour);
+    const success = db.updateCard(cardId, data.name, data.description, data.contactInfo, data.imageUrl, data.colour);
     console.log(success);
     res.status(200).json({ message: 'Card updated', user: "success" });
     console.log("Card updated for "+cardId);

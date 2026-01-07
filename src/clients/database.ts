@@ -3,6 +3,8 @@ import * as dotenv from 'dotenv';
 
 /**
  * Database client for MySQL interactions.
+ * @author carolwangg
+ * @version v0.1.0
  */
 class Database {
     #pool: mysql.Pool;
@@ -34,9 +36,9 @@ class Database {
         }
     }
 
-    async removeUser(id: string, userType: string){
+    async removeUser(id: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM user_types WHERE id = ? AND user_type = ?', [id, userType]);
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM user_types WHERE id = ?', [id]);
             return result;
         }catch (err){
             console.error('removeUser error:', err);
@@ -44,10 +46,20 @@ class Database {
         }
     }
 
+    async getUsers(){
+        try{
+            const rows : mysql.RowDataPacket[] = await this.query<mysql.RowDataPacket[]>('SELECT * FROM user_types');
+            return rows;
+        }catch (err){
+            console.error('getUsers error:', err);
+            throw err;
+        }
+    }
+
     async getUserType(id: string){
         try{
             const result: mysql.RowDataPacket[] = await this.query<mysql.RowDataPacket[]>('SELECT user_type FROM user_types WHERE id = ?', [id]);
-            return result;
+            return result.length == 1 ? result[0].user_type : null;
         }catch (err){
             console.error('getUserType error:', err);
             throw err;
@@ -75,9 +87,9 @@ class Database {
         }
     }
 
-    async addCustomer(id: string, email: string, country: string, language: string){
+    async addCustomer(id: string, email: string, country: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('INSERT INTO customers (id, email, country, language) VALUES (?, ?, ?, ?)', [id, email, country, language]);
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('INSERT INTO customers (id, email, country) VALUES (?, ?, ?)', [id, email, country]);
             return result;
         }catch (err){
             console.error('addCustomer error:', err);
@@ -138,9 +150,9 @@ class Database {
         }
     }
 
-    async addBusiness(id: string, email: string, country: string, language: string){
+    async addBusiness(id: string, email: string, country: string, name: string, rating: number){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, language) VALUES (?, ?, ?, ?)', [id, email, country, language]);
+            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, name, rating) VALUES (?, ?, ?, ?, ?)', [id, email, country, name, rating]);
             return result;
         }catch (err){
             console.error('addBusiness error:', err);
@@ -148,11 +160,11 @@ class Database {
         }
     }
 
-    async updateBusiness(business_id: string, email: string, country: string, language: string, longitude: number, latitude: number, street_address: string, 
+    async updateBusiness(business_id: string, email: string, country: string, longitude: number, latitude: number, street_address: string, 
         business_email: string, business_phone: string, name: string, description: string, image_url: string, banner_url: string){
         try{
-            const command = "UPDATE `businesses` SET `email` = ?, `country` = ?, `language` = ?, `longitude` = ?, `latitude` = ?, `street_address` = ?, `business_email` = ?, `business_phone` = ?, `name` = ?, `description` = ?, `image_url` = ?, `banner_url` = ? WHERE `id` = ?";
-            const result: mysql.ResultSetHeader[] = await this.query(command, [email, country, language, longitude, latitude, street_address, business_email, business_phone, name, description, image_url, banner_url, business_id]);
+            const command = "UPDATE `businesses` SET `email` = ?, `country` = ?, `longitude` = ?, `latitude` = ?, `street_address` = ?, `business_email` = ?, `business_phone` = ?, `name` = ?, `description` = ?, `image_url` = ?, `banner_url` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [email, country, longitude, latitude, street_address, business_email, business_phone, name, description, image_url, banner_url, business_id]);
             return result;
         }catch (err){
             console.error('updateBusiness error:', err);
@@ -201,9 +213,9 @@ class Database {
         }
     }
 
-    async addReward(id: string, name: string, points: number, description: string, image_url: string, business_id: string){
+    async addReward(id: string, name: string, description: string, image_url: string, points: number, business_id: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO rewards (id, name, points, description, image_url, business_id) VALUES (?, ?, ?, ?, ?, ?)', [id, name, points, description, image_url, business_id]);
+            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO rewards (id, name, description, image_url, points, business_id) VALUES (?, ?, ?, ?, ?, ?)', [id, name, description, image_url, points, business_id]);
             return result;
         }catch (err){
             console.error('addReward error:', err);
@@ -263,13 +275,23 @@ class Database {
         }
     }
 
-    async updateCard(card_id: string, name: string, description: string, image_url: string, contact_info: string, colour: string){
+    async updateCard(card_id: string, name: string, description: string, contact_info: string, image_url: string, colour: string){
         try{
-            const command = "UPDATE `cards` SET `name` = ?, `description` = ?, `image_url` = ?, `contact_info` = ?, `colour` = ? WHERE `id` = ?";
-            const result: mysql.ResultSetHeader[] = await this.query(command, [name, description, image_url, contact_info, colour, card_id]);
+            const command = "UPDATE `cards` SET `name` = ?, `description` = ?, `contact_info` = ?, `image_url` = ?, `colour` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [name, description, contact_info, image_url, colour, card_id]);
             return result;
         }catch (err){
             console.error('updateCard error:', err);
+            throw err;
+        }
+    }
+
+    async removeCard(card_id: string){
+        try{
+            const result: mysql.ResultSetHeader[] = await this.query('DELETE FROM cards WHERE id = ?', [card_id]);
+            return result;
+        }catch (err){
+            console.error('removeCard error:', err);
             throw err;
         }
     }
@@ -285,7 +307,7 @@ class Database {
     }
     async getCustomerCard(customer_id: string, card_id: string){
         try{
-            const rows : mysql.RowDataPacket[] = await this.query('SELECT id, name, description, contact_info, points FROM cards INNER JOIN customer_cards WHERE customer_id = ? AND card_id = ?', [customer_id, card_id]);
+            const rows : mysql.RowDataPacket[] = await this.query('SELECT id, name, description, contact_info, points, colour FROM cards INNER JOIN customer_cards WHERE customer_id = ? AND card_id = ?', [customer_id, card_id]);
             return rows && rows.length ? rows[0] : null;
         }catch (err){
             console.error('getCardFromCustomer error:', err);
@@ -356,6 +378,56 @@ class Database {
             throw err;
         }
     }
+
+    async clearAllTables(){
+        try {
+            await this.query("ALTER TABLE customer_cards DROP FOREIGN KEY customer_cards_to_cards");
+            await this.query("ALTER TABLE customer_cards DROP FOREIGN KEY customer_cards_to_customers");
+            await this.query("ALTER TABLE rewards DROP FOREIGN KEY rewards_to_businesses");
+            await this.query("ALTER TABLE cards DROP FOREIGN KEY cards_to_businesses");
+
+            await this.query('TRUNCATE customer_cards');
+            await this.query('TRUNCATE cards');
+            await this.query('TRUNCATE rewards');
+            await this.query('TRUNCATE businesses');
+            await this.query('TRUNCATE customers');
+            await this.query('TRUNCATE user_types');
+
+            await this.query("ALTER TABLE `reward-app`.`customer_cards` \
+            ADD CONSTRAINT `customer_cards_to_cards`\
+            FOREIGN KEY (`card_id`)\
+            REFERENCES `reward-app`.`cards` (`id`)\
+            ON DELETE NO ACTION\
+            ON UPDATE NO ACTION;");
+
+            await this.query("ALTER TABLE `reward-app`.`customer_cards` \
+            ADD CONSTRAINT `customer_cards_to_customers`\
+            FOREIGN KEY (`customer_id`)\
+            REFERENCES `reward-app`.`customers` (`id`)\
+            ON DELETE NO ACTION\
+            ON UPDATE NO ACTION;");
+            
+            await this.query(
+            "ALTER TABLE `reward-app`.`rewards` \
+            ADD CONSTRAINT `rewards_to_businesses`\
+            FOREIGN KEY (`business_id`)\
+            REFERENCES `reward-app`.`businesses` (`id`)\
+            ON DELETE NO ACTION\
+            ON UPDATE NO ACTION;");
+
+            await this.query(
+            "ALTER TABLE `reward-app`.`cards` \
+            ADD CONSTRAINT `cards_to_businesses`\
+            FOREIGN KEY (`id`)\
+            REFERENCES `reward-app`.`businesses` (`id`)\
+            ON DELETE NO ACTION\
+            ON UPDATE NO ACTION;");
+            
+        } catch (err) {
+            console.error('clearAllTables error:', err);
+            throw err;
+        }
+    }
 }
 
 export default new Database();
@@ -369,7 +441,6 @@ export default new Database();
 //     latitude: 0,
 //     longitude: 0,
 //     country: 'CA',
-//     language: 'en'
 //     }
 
 //     const user_1 = {
@@ -379,7 +450,6 @@ export default new Database();
 //     latitude: 0,
 //     longitude: 0,
 //     country: 'ES',
-//     language: 'es',
 //     street_address: '123 Test St',
 //     business_email: 'business@example.com',
 //     business_phone: '1234567890',
@@ -387,12 +457,62 @@ export default new Database();
 //     banner_url: 'http://example.com/banner.jpg'
 //     }
 
+//     const user_2 = {
+//     id: 'user_2',
+//     name: 'Test User',
+//     email: 'test@example.com',
+//     latitude: 0,
+//     longitude: 0,
+//     country: 'CA',
+//     }
+
+//     const user_3 = {
+//     id: 'user_3',
+//     name: 'Test Business',
+//     email: 'test@example.com',
+//     latitude: 0,
+//     longitude: 0,
+//     country: 'ES',
+//     street_address: '123 Test St',
+//     business_email: 'business@example.com',
+//     business_phone: '1234567890',
+//     image_url: 'http://example.com/image.jpg',
+//     banner_url: 'http://example.com/banner.jpg'
+//     }
+
+//     const card_1 = {
+//     id: 'user_1',
+//     name: 'Test Card',
+//     description: 'Test Description',
+//     contact_info: 'Test Contact Info',
+//     image_url: 'http://example.com/card.jpg',
+//     colour: 'ff0000',
+//     }
+
+//     const card_0 = {
+//     customer_id: 'user_0',
+//     card_id: 'user_1',
+//     points: 0
+//     }
+
+//     const reward_1 = {
+//     id: '1',
+//     name: 'Test Reward',
+//     description: 'Test Description',
+//     image_url: 'http://example.com/reward.jpg',
+//     points: 100,
+//     business_id: 'user_1'
+//     }
+
 //     const db = new Database();
-//     // const result?: mysql.RowDataPacket[] = await db.getCustomers();
-//     // console.log(result);
-//     // await db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language);
-//     // await db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.language);
-//     // console.log("here");
-//     const result = await db.removeCustomer(user_0.id);
-//     console.log(result);
+//     // db.clearAllTables();
+//     // await db.addCustomer(user_0.id, user_0.email, user_0.country);
+//     // await db.addCustomer(user_2.id, user_2.email, user_2.country);
+//     // await db.addBusiness(user_1.id, user_1.email, user_1.country);
+//     // await db.addBusiness(user_3.id, user_3.email, user_3.country);
+//     // await db.addCard(user_1.id, user_1.name);
+//     // await db.addCard(user_3.id, user_3.name);
+//     // await db.addCustomerCard(user_0.id, user_3.id);
+//     // await db.addCustomerCard(user_0.id, user_1.id);
+//     // console.log(await db.getCustomerCards(card_0.customer_id));
 // }
