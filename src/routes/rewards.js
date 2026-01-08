@@ -10,6 +10,7 @@ router.use(urlencoded({ extended: true }));
 router.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },
 }));
+
 // Define routes
 router.get('/', async (req, res) => {
   const rewards = await db.getRewards();
@@ -30,6 +31,14 @@ router.get('/create', (req, res) => {
   res.send('Create reward');
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "business_id", "description": "Business ID"},
+ *   {"type": "String", "name": "name", "description": "Reward name"},
+ *   {"type": "String", "name": "description", "description": "Reward description"},
+ *   {"type": "Number", "name": "points", "description": "Points required for the reward"}
+ * ]
+ */
 router.post('/create', async(req, res) => {
   // req.body contains the parsed JSON data
   const data = req.body;
@@ -52,6 +61,14 @@ router.post('/create', async(req, res) => {
   
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "reward_id", "description": "Reward ID"},
+ *   {"type": "String", "name": "name", "description": "Reward name"},
+ *   {"type": "String", "name": "description", "description": "Reward description"},
+ *   {"type": "Number", "name": "points", "description": "Points required for the reward"}
+ * ]
+ */
 router.post('/update', async(req, res) => {
   // req.body contains the parsed JSON data
   const data = req.body;
@@ -72,6 +89,13 @@ router.post('/update', async(req, res) => {
   }
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "customerId", "description": "Customer ID"},
+ *   {"type": "String", "name": "cardId", "description": "Card ID"},
+ *   {"type": "String", "name": "rewardId", "description": "Reward ID"}
+ * ]
+ */
 router.post('/redeem', async(req, res) => {
   // req.body contains the parsed JSON data
   const data = req.body;

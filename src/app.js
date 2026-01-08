@@ -23,6 +23,7 @@ app.use('/businesses', businessesRouter);
 app.use('/rewards', rewardsRouter);
 app.use('/cards', cardsRouter);
 app.use('/users', userRouter);
+
 app.get('/', (req, res) => {
   res.status(201).json({ message: 'Server Up', user: req.body });
 });

@@ -81,6 +81,13 @@ router.get('/create', (req, res) => {
   res.status(200).send('Create customers');
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "businessId", "description": "User's unique id"},
+ *   {"type": "String", "name": "email", "description": "User's email"},
+ *   {"type": "String", "name": "country", "description": "User's country two-digit code"}
+ * ]
+ */
 router.post('/create', async(req, res) => {
   const data = req.body;
   try{
@@ -95,8 +102,17 @@ router.post('/create', async(req, res) => {
     console.log("Customer creation error"+err);
   }  
 });
-
-router.get('/:id/update', async(req, res) => {
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "email", "description": "Customer's email"},
+ *   {"type": "String", "name": "country", "description": "Customer's country"},
+ *   {"type": "String", "name": "name", "description": "Customer's name"},
+ *   {"type": "Number", "name": "longitude", "description": "Customer's longitude"},
+ *   {"type": "Number", "name": "latitude", "description": "Customer's latitude"},
+ *   {"type": "String", "name": "street_address", "description": "Customer's street address"},
+ *   {"type": "String", "name": "image_url", "description": "Customer's image URL"}
+ * ]
+ */router.get('/:id/update', async(req, res) => {
   res.status(200).json({ message: 'customer update endpoint', user: "success" });
 });
 
@@ -115,6 +131,11 @@ router.post('/:id/update', async(req, res) => {
   }  
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "businessId", "description": "Business ID"}
+ * ]
+ */
 router.post('/:id/cards/create', async(req, res) => {
   console.log(req);
   const data = req.body;
@@ -130,8 +151,12 @@ router.post('/:id/cards/create', async(req, res) => {
   }
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "Number", "name": "points", "description": "Points to add to the card"}
+ * ]
+ */
 router.post('/:id/cards/:card_id/add-points', async(req, res) => {
-  const data = req.body;
   const customer_id = req.params.id;
   const card_id = req.params.card_id;
   const toAdd = req.body.points;

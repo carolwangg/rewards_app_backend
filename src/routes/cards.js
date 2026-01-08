@@ -21,6 +21,12 @@ router.get('/create', (req, res) => {
   res.status(200).send('Create cards');
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "businessId", "description": "Business ID"},
+ *   {"type": "String", "name": "name", "description": "Card name"}
+ * ]
+ */
 router.post('/create', async(req, res) => {
   // req.body contains the parsed JSON data
   const data = req.body;
@@ -37,6 +43,15 @@ router.post('/create', async(req, res) => {
   
 });
 
+/**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "name", "description": "Card name"},
+ *   {"type": "String", "name": "description", "description": "Card description"},
+ *   {"type": "String", "name": "contactInfo", "description": "Card contact info"},
+ *   {"type": "String", "name": "imageUrl", "description": "Card image URL"},
+ *   {"type": "String", "name": "colour", "description": "Card colour"}
+ * ]
+ */
 router.post('/:id/update', async(req, res) => {
   // req.body contains the parsed JSON data
   const cardId = req.params.id;
