@@ -80,4 +80,26 @@ router.post('/:id/update', async(req, res) => {
     console.log("Business update error"+err);
   }  
 });
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const business_id = req.params.id;
+    const business = await db.getBusiness(business_id);
+    if (business == null){
+      res.status(400).json({message: `Business ${business_id} does not exist`, user: req.body});
+      console.log(`Business ${business_id} does not exist`);
+      return;
+    }
+    const db_result = await db.deleteBusiness(business_id);
+    const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.image_url));
+    const aws_result_2 = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
+    console.log(" db_result:"+db_result);
+    console.log("aws_result:"+aws_result);
+    console.log("aws_result_2:"+aws_result_2);
+    res.status(200).json({message: `Business ${business_id} deleted`, user: "success"});
+    console.log(`Business ${business_id} deleted`);
+  } catch (err) {
+    res.status(err.status).json({message: `Business deletion error`, user: err.errors[0].longMessage});
+  }
+});
 export default router;

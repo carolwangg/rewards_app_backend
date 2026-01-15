@@ -1,6 +1,6 @@
 import { Router, json, urlencoded } from 'express';
 import db from "../clients/database.ts";
-import awsS3 from '../clients/aws-s3.ts';
+import awsS3 from '../clients/awsS3.ts';
 import fileUpload from 'express-fileupload';
 import { randomUUID } from "node:crypto";
 
@@ -49,7 +49,7 @@ router.post('/create', async(req, res) => {
     console.log("Business does not exist");
   }else{
     const id = randomUUID();
-    const file_name = `images/reward-${id}`;
+    const file_name = `images/${data.business_id}/reward-${id}`;
     const putObjectResult = await awsS3.putObject(image.data, file_name);
     const image_url = putObjectResult.url;
     console.log("image url:" + image_url)
@@ -63,6 +63,7 @@ router.post('/create', async(req, res) => {
 
 /**
  * @apiQueryGroup [
+ *   {"type": "String", "name": "business_id", "description": "Business ID"},
  *   {"type": "String", "name": "reward_id", "description": "Reward ID"},
  *   {"type": "String", "name": "name", "description": "Reward name"},
  *   {"type": "String", "name": "description", "description": "Reward description"},
@@ -79,7 +80,7 @@ router.post('/update', async(req, res) => {
     console.log("Reward does not exist");
   }else{
     const id = randomUUID();
-    const file_name = `images/reward-${id}`;
+    const file_name = `images/${data.business_id}/reward-${id}`;
     const putObjectResult = await awsS3.putObject(image.data, file_name);
     const image_url = putObjectResult.url;
     const success = db.updateReward(data.reward_id, data.name, data.description, image_url, data.points);
@@ -123,6 +124,27 @@ router.post('/redeem', async(req, res) => {
         console.log("error redeeming reward - not enough points"); 
     }
   }
+
+  /**
+ * @apiQueryGroup [
+ *   {"type": "String", "name": "reward_id", "description": "Reward ID"}
+ * ]
+ */
+  router.delete('/:id', async(req, res) => {
+    // req.body contains the parsed JSON data
+    const reward = await db.getReward(req.params.id);
+    if (reward == null){
+      res.status(400).json({ message: 'Reward does not exist', user: req.body });
+      console.log("Reward does not exist");
+    }else{
+      const dbResult = db.deleteReward(req.params.id);
+      const awsResult = await awsS3.deleteObject(awsS3.getKeyFromUrl(reward.image_url));
+      console.log("dbResult:" + dbResult);
+      console.log("awsResult:" + awsResult);
+      res.status(200).json({ message: 'Reward deleted', user: "success" });
+      console.log("Reward deleted");
+    }
+  });
 });
 
 export default router;

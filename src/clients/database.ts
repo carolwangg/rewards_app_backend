@@ -87,9 +87,9 @@ class Database {
         }
     }
 
-    async addCustomer(id: string, email: string, country: string){
+    async addCustomer(id: string, email: string, country: string, image_url: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('INSERT INTO customers (id, email, country) VALUES (?, ?, ?)', [id, email, country]);
+            const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('INSERT INTO customers (id, email, country, image_url) VALUES (?, ?, ?, ?)', [id, email, country, image_url]);
             return result;
         }catch (err){
             console.error('addCustomer error:', err);
@@ -150,9 +150,9 @@ class Database {
         }
     }
 
-    async addBusiness(id: string, email: string, country: string, name: string, rating: number){
+    async addBusiness(id: string, email: string, country: string, name: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, name, rating) VALUES (?, ?, ?, ?, ?)', [id, email, country, name, rating]);
+            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, name, rating) VALUES (?, ?, ?, ?, 5)', [id, email, country, name]);
             return result;
         }catch (err){
             console.error('addBusiness error:', err);

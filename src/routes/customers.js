@@ -1,5 +1,8 @@
 import { Router, json, urlencoded } from 'express';
 import db from "../clients/database.ts";
+import awsS3 from '../clients/awsS3.ts';
+import {generateIdenticon} from "../helpers/jidenticon.ts'";
+import { randomUUID } from "node:crypto";
 
 const router = Router();
 router.use(json());
@@ -91,7 +94,13 @@ router.get('/create', (req, res) => {
 router.post('/create', async(req, res) => {
   const data = req.body;
   try{
-    const db_result = await db.addCustomer(data.id, data.email, data.country);
+    const id = randomUUID();
+    const image = generateIdenticon(data.name);
+    const file_name = `images/${id}/pfp-${id}`;
+    const putObjectResult = await awsS3.putObject(image.data, file_name);
+    const image_url = putObjectResult.url;
+
+    const db_result = await db.addCustomer(data.id, data.email, data.country, image_url);
     const db_userType_result = await db.addUser(data.id, "customer");
     res.status(201).json({message: `Customer ${data.id} created`, user: "success"});
     console.log("Customer created");
@@ -173,6 +182,27 @@ router.post('/:id/cards/:card_id/add-points', async(req, res) => {
     console.log(result);
   }catch (err){
     res.status(501).json({ message: 'Error rewarding points', user: req.body });
+  }
+});
+
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const customer_id = req.params.id;
+    const customer = await db.getCustomer(customer_id);
+    if (customer == null){
+      res.status(400).json({message: `Customer ${customer_id} does not exist`, user: req.body});
+      console.log(`Customer ${customer_id} does not exist`);
+      return;
+    }
+    const db_result = await db.deleteCustomer(customer_id);
+    const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(customer.image_url));
+    console.log(" db_result:"+db_result);
+    console.log("aws_result:"+aws_result);
+    res.status(200).json({message: `Customer ${customer_id} deleted`, user: "success"});
+    console.log(`Customer ${customer_id} deleted`);
+  } catch (err) {
+    res.status(err.status).json({message: `Customer deletion error`, user: err.errors[0].longMessage});
   }
 });
 

@@ -17,7 +17,7 @@ router.get('/:id', async (req, res) => {
   res.status(200).json({message: `User ${user} type`, user: user});
 });
 
-router.delete('/:id/delete', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const userId = req.params.id;
         const result = await clerk.deleteUser(userId);

@@ -78,6 +78,10 @@ class awsS3Client {
             console.error(err);
         }
     }
+
+    getKeyFromUrl(url: string): string {
+        return url.split("amazonaws.com/")[1]; // Remove leading '/'
+    }
 }
 
 // import { readFile } from "node:fs/promises";
