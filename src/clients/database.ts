@@ -108,6 +108,17 @@ class Database {
         }
     }
 
+    async updateCustomerImage(customer_id: string, image_url: string){
+        try{
+            const command = "UPDATE `customers` SET `image_url` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [image_url, customer_id]);
+            return result;
+        }catch (err){
+            console.error('updateCustomerImage error:', err);
+            throw err;
+        }
+    }
+
     async removeCustomer(id: string){
         try{
             const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM customers WHERE id = ?', [id]);
@@ -150,9 +161,9 @@ class Database {
         }
     }
 
-    async addBusiness(id: string, email: string, country: string, name: string){
+    async addBusiness(id: string, email: string, country: string, name: string, image_url: string, banner_url: string){
         try{
-            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, name, rating) VALUES (?, ?, ?, ?, 5)', [id, email, country, name]);
+            const result: mysql.ResultSetHeader[] = await this.query('INSERT INTO businesses (id, email, country, name, rating, image_url, banner_url) VALUES (?, ?, ?, ?, 5, ?, ?)', [id, email, country, name, image_url, banner_url]);
             return result;
         }catch (err){
             console.error('addBusiness error:', err);
@@ -171,6 +182,30 @@ class Database {
             throw err;
         }
     }
+
+    async updateBusinessImage(business_id: string, image_url: string){
+        try{
+            const command = "UPDATE `businesses` SET `image_url` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [image_url, business_id]);
+            return result;
+        }catch (err){
+            console.error('updateBusinessImage error:', err);
+            throw err;
+        }
+    }
+
+
+    async updateBusinessBanner(business_id: string, banner_url: string){
+        try{
+            const command = "UPDATE `businesses` SET `banner_url` = ? WHERE `id` = ?";
+            const result: mysql.ResultSetHeader[] = await this.query(command, [banner_url, business_id]);
+            return result;
+        }catch (err){
+            console.error('updateBusinessBanner error:', err);
+            throw err;
+        }
+    }
+
 
     async removeBusiness(id: string){
         try{

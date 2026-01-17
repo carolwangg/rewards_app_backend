@@ -42,6 +42,9 @@ class Clerk {
 
 export default new Clerk();
 
+export function print(){
+    console.log("hello");
+}
 // const clerk = new Clerk();
 // const result = clerk.setUserType("user_363Tl64h2sSxQH3jKLIWBPpZEYg", "customer");
 // result.then((data)=>{console.log(data.emailAddresses)});

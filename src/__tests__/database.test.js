@@ -148,7 +148,7 @@ test('getCustomer user_0 (none existing)', async() => {
 });
 
 test('addBusiness user_1', async() => {
-  await expect(db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name)).resolves.toBeDefined();
+  await expect(db.db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name, user_1.image_url, user_1.banner_url)).resolves.toBeDefined();
 });
 
 test('getBusiness user_1', async() => {
@@ -188,7 +188,7 @@ test('getBusinesses includes user_1', async() => {
 
 test('add user_1 (duplicate)', async() => {
   try {
-    await db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name);
+    await db.db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name, user_1.image_url, user_1.banner_url);
   } catch(err) {
     expect(err.toString()).toMatch("Error");
   }
@@ -213,7 +213,7 @@ test('addReward without business (should fail)', async() => {
 
 test('addCustomer user_0 and addBusiness user_1 for further tests', async() => {
   await expect(db.addCustomer(user_0.id, user_0.email, user_0.country, user_0.image_url)).resolves.toBeDefined();
-  await expect(db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name)).resolves.toBeDefined();
+  await expect(db.db.addBusiness(user_1.id, user_1.email, user_1.country, user_1.name, user_1.image_url, user_1.banner_url)).resolves.toBeDefined();
 });
 
 test('addCard with valid business', async() => {

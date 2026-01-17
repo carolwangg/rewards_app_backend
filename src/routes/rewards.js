@@ -75,6 +75,7 @@ router.post('/update', async(req, res) => {
   const data = req.body;
   const image = req.files.image;
   const reward = await db.getReward(data.reward_id);
+  console.log("image:"+image);
   if (reward == null){
     res.status(400).json({ message: 'Reward does not exist', user: req.body });
     console.log("Reward does not exist");
