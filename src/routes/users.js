@@ -13,8 +13,9 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const user = await db.getUserType(req.params.id);
-  res.status(200).json({message: `User ${user} type`, user: user});
+  const userId = req.params.id;
+  const user = await db.getUserType(userId);
+  res.status(200).json({message: `User ${userId} type`, user: user});
 });
 
 router.delete('/:id', async (req, res) => {

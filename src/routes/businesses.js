@@ -2,10 +2,15 @@ import { Router, json, urlencoded } from 'express';
 import db from "../clients/database.ts";
 import {generateIdenticon} from "../helpers/jidenticon.ts";
 import { randomUUID } from "node:crypto";
+import fileUpload from 'express-fileupload';
+import awsS3 from '../clients/awsS3.ts';
 
 const router = Router();
 router.use(json());
 router.use(urlencoded({ extended: true }));
+router.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+}));
 
 // Define routes
 router.get('/', async (req, res) => {
@@ -48,7 +53,7 @@ router.post('/create', async(req, res) => {
   const image_url = putObjectResult.url;
 
   let db_result = await db.addBusiness(data.businessId, data.email, data.country, data.name, data.image_url, data.image_url);
-  const db_userType_result = await db.addUser(data.businessId, "business");
+  const db_userType_result = await db.addUser(data.businessId, "business", data.email);
   console.log("Business created");
   console.log("MySQL:"+db_result);
   console.log("UserType:"+db_userType_result);
@@ -72,16 +77,13 @@ router.post('/create', async(req, res) => {
  *   {"type": "String", "name": "business_email", "description": "Business' email (displayed to customers, not used for sign-in)"},
  *   {"type": "String", "name": "business_phone", "description": "Business' phone number (displayed to customers, not used for sign-in)"},
  *   {"type": "String", "name": "name", "description": "Business name (max 30 chars)"},
- *   {"type": "String", "name": "description", "description": "Business description (max 50 chars)"},
- *   {"type": "String", "name": "image_url", "description": "Logo url"},
- *   {"type": "String", "name": "banner_url", "description": "Background banner url"}
+ *   {"type": "String", "name": "description", "description": "Business description (max 50 chars)"}
  * ]
  */
 router.post('/:id/update', async(req, res) => {
   const businessId = req.params.id;
   const data = req.body;
-  const result = await db.updateBusiness(data.id, data.email, data.country, data.longitude, data.latitude, data.street_address, data.business_email, data.business_phone, data.name, data.description, data.image_url, data.banner_url);
-
+  const result = await db.updateBusiness(businessId, data.email, data.country, data.longitude, data.latitude, data.street_address, data.business_email, data.business_phone, data.name, data.description);
   try{
     res.status(200).json({message: "Business successfully updated", user: "success"});
     console.log("Business updated");
@@ -94,34 +96,13 @@ router.post('/:id/update', async(req, res) => {
 router.post('/:id/updateImage', async(req, res) => {
   // req.body contains the parsed JSON data
   const image = req.files.image;
-  const customer_id = req.params.id;
-  const customer = await db.getReward(customer_id);
-  if (customer == null){
-    res.status(400).json({ message: 'Customer does not exist', user: req.body });
-    console.log("Customer does not exist");
-  }else{
-    await awsS3.deleteObject(customer.image_url);
-    const id = randomUUID();
-    const file_name = `images/${data.id}/pfp-${id}`;
-    const putObjectResult = await awsS3.putObject(image.data, file_name);
-    const image_url = putObjectResult.url;
-    const success = db.updateCustomerImage(customer_id, image_url);
-    console.log(success);
-    res.status(200).json({ message: 'Customer image updated', user: "success" });
-    console.log("Customer image updated");
-  }
-});
-
-router.post('/:id/updateImage', async(req, res) => {
-  // req.body contains the parsed JSON data
-  const image = req.files.image;
   const business_id = req.params.id;
   const business = await db.getBusiness(business_id);
   if (business == null){
     res.status(400).json({ message: 'Business does not exist', user: req.body });
     console.log("Business does not exist");
   }else{
-    await awsS3.deleteObject(awsS3.getKeyFromUrl(business.image_url));
+    if (business.image_url) await awsS3.deleteObject(awsS3.getKeyFromUrl(business.image_url));
     const id = randomUUID();
     const file_name = `images/${business_id}/pfp-${id}`;
     const putObjectResult = await awsS3.putObject(image.data, file_name);
@@ -142,7 +123,7 @@ router.post('/:id/updateBanner', async(req, res) => {
     res.status(400).json({ message: 'Business does not exist', user: req.body });
     console.log("Business does not exist");
   }else{
-    await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
+    if (business.banner_url) await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
     const id = randomUUID();
     const file_name = `images/${business_id}/banner-${id}`;
     const putObjectResult = await awsS3.putObject(image.data, file_name);
@@ -163,16 +144,26 @@ router.delete('/:id', async (req, res) => {
       console.log(`Business ${business_id} does not exist`);
       return;
     }
-    const db_result = await db.deleteBusiness(business_id);
-    const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.image_url));
-    const aws_result_2 = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
+    const rewards = await db.getRewardsFromBusiness(business_id);
+    console.log("Rewards:"+JSON.stringify(rewards));
+    for (let i = 0; i <rewards.length; i++){
+      console.log("reward:"+JSON.stringify(rewards[i]))
+      await db.removeReward(rewards[i].id);
+      // const aws_result_2 = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
+
+    }
+    await db.removeCard(business_id);
+    const db_result = await db.removeBusiness(business_id);
+    // const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.image_url));
+    // const aws_result_2 = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
     console.log(" db_result:"+db_result);
-    console.log("aws_result:"+aws_result);
-    console.log("aws_result_2:"+aws_result_2);
+    // console.log("aws_result:"+aws_result);
+    // console.log("aws_result_2:"+aws_result_2);
     res.status(200).json({message: `Business ${business_id} deleted`, user: "success"});
     console.log(`Business ${business_id} deleted`);
   } catch (err) {
-    res.status(err.status).json({message: `Business deletion error`, user: err.errors[0].longMessage});
+    console.error("Error deleting business:"+err)
+    res.status(400).json({message: `Business deletion error`, user: err.errors[0].longMessage});
   }
 });
 export default router;

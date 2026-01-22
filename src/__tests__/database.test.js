@@ -233,7 +233,7 @@ test('getCard card_1', async() => {
 });
 
 test('updateCard card_1', async() => {
-  const updatedCard = await db.updateCard(card_1.id, 'Updated Card Name', card_1.description, card_1.contact_info, card_1.image_url, card_1.colour);
+  const updatedCard = await db.updateCard(card_1.id, 'Updated Card Name', card_1.description, card_1.contact_info, card_1.image_url, card_1.colour, card_1.colour);
   expect(updatedCard).toBeDefined();
 });
 
@@ -244,6 +244,7 @@ test('getCard card_1 (after update)', async() => {
   expect(card.contact_info).toBe(card_1.contact_info);
   expect(card.image_url).toBe(card_1.image_url);
   expect(card.colour).toBe(card_1.colour);
+  expect(card.text_colour).toBe(card_1.colour);
 });
 
 test('removeCard card_1', async() => {
@@ -330,7 +331,7 @@ test('getRewards empty after removeBusinessRewards', async() => {
 
 test('addCard + updateCard card_1 (setup for customerCard tests)', async() => {
   await expect(db.addCard(card_1.id, card_1.name)).resolves.toBeDefined();
-  await expect(db.updateCard(card_1.id, card_1.name, card_1.description, card_1.contact_info, card_1.image_url, card_1.colour)).resolves.toBeDefined();
+  await expect(db.updateCard(card_1.id, card_1.name, card_1.description, card_1.contact_info, card_1.image_url, card_1.colour, card_1.colour)).resolves.toBeDefined();
 });
 
 test('addCustomerCard card_0', async() => {
@@ -352,7 +353,7 @@ test('getCustomerCard card_0', async() => {
   expect(customerCard.colour).toBe(card_1.colour);
   expect(customerCard.contact_info).toBe(card_1.contact_info);
   expect(customerCard.points).toBe(0);
-  expect(customerCard.colour).toBe(card_1.colour);
+  expect(customerCard.text_colour).toBe(card_1.colour);
 });
 
 test('updateCustomerCard card_0', async() => {

@@ -73,21 +73,41 @@ router.post('/create', async(req, res) => {
 router.post('/update', async(req, res) => {
   // req.body contains the parsed JSON data
   const data = req.body;
-  const image = req.files.image;
   const reward = await db.getReward(data.reward_id);
-  console.log("image:"+image);
   if (reward == null){
     res.status(400).json({ message: 'Reward does not exist', user: req.body });
     console.log("Reward does not exist");
   }else{
-    const id = randomUUID();
-    const file_name = `images/${data.business_id}/reward-${id}`;
-    const putObjectResult = await awsS3.putObject(image.data, file_name);
-    const image_url = putObjectResult.url;
-    const success = db.updateReward(data.reward_id, data.name, data.description, image_url, data.points);
+    const success = db.updateReward(data.reward_id, data.name, data.description, data.points);
     console.log(success);
     res.status(200).json({ message: 'Reward updated', user: "success" });
     console.log("Reward updated");
+  }
+});
+
+
+router.post('/:id/updateImage', async(req, res) => {
+  try{
+    const image = req.files.image;
+    const reward_id = req.params.id;
+    const reward = await db.getReward(reward_id);
+    if (reward == null){
+      res.status(400).json({ message: 'Reward does not exist', user: req.body });
+      console.log("Reward does not exist");
+    }else{
+      if (reward.image_url) await awsS3.deleteObject(awsS3.getKeyFromUrl(reward.image_url));
+      const id = randomUUID();
+      const file_name = `images/${reward_id}/reward-${id}`;
+      const putObjectResult = await awsS3.putObject(image.data, file_name);
+      const image_url = putObjectResult.url;
+      const success = db.updateRewardImage(reward_id, image_url);
+      console.log(success);
+      res.status(200).json({ message: 'Reward image updated', user: "success" });
+      console.log("Reward image updated");
+    }
+  }catch(err){
+    console.error(err);
+    res.status(400).json({ message: 'Card image not updated', user: req.body })
   }
 });
 

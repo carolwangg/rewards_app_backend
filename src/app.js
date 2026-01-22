@@ -4,6 +4,7 @@ import businessesRouter from './routes/businesses.js';
 import rewardsRouter from './routes/rewards.js';
 import cardsRouter from './routes/cards.js';
 import userRouter from './routes/users.js';
+import emailRouter from './routes/emails.js';
 import cors from 'cors';
 
 export const app = express();
@@ -23,6 +24,7 @@ app.use('/businesses', businessesRouter);
 app.use('/rewards', rewardsRouter);
 app.use('/cards', cardsRouter);
 app.use('/users', userRouter);
+app.use('/emails', emailRouter);
 
 app.get('/', (req, res) => {
   res.status(201).json({ message: 'Server Up', user: req.body });

@@ -3,10 +3,14 @@ import db from "../clients/database.ts";
 import awsS3 from '../clients/awsS3.ts';
 import { generateIdenticon } from "../helpers/jidenticon.ts";
 import { randomUUID } from "node:crypto";
+import fileUpload from 'express-fileupload';
 
 const router = Router();
 router.use(json());
 router.use(urlencoded({ extended: true }));
+router.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+}));
 
 // Define routes
 router.get('/', async (req, res) => {
@@ -103,7 +107,7 @@ router.post('/create', async(req, res) => {
     const image_url = putObjectResult.url;
 
     const db_result = await db.addCustomer(data.id, data.email, data.country, image_url);
-    const db_userType_result = await db.addUser(data.id, "customer");
+    const db_userType_result = await db.addUser(data.id, "customer", data.email);
     res.status(201).json({message: `Customer ${data.id} created`, user: "success"});
     console.log("Customer created");
     console.log("MySQL:"+db_result);
@@ -121,14 +125,12 @@ router.post('/create', async(req, res) => {
  *   {"type": "Number", "name": "longitude", "description": "Customer's longitude"},
  *   {"type": "Number", "name": "latitude", "description": "Customer's latitude"},
  *   {"type": "String", "name": "street_address", "description": "Customer's street address"},
- *   {"type": "String", "name": "image_url", "description": "Customer's image URL"}
  * ]
  */router.get('/:id/update', async(req, res) => {
   res.status(200).json({ message: 'customer update endpoint', user: "success" });
 });
 
 router.post('/:id/update', async(req, res) => {
-  console.log("updating customer")
   const data = req.body;
   const customerId = req.params.id;
   try{
@@ -136,7 +138,7 @@ router.post('/:id/update', async(req, res) => {
       if (!getCustomer){
         throw new Error("Customer does not exist");
     }
-    const result = await db.updateCustomer(customerId, data.email, data.country, data.name, data.longitude, data.latitude, data.street_address, data.image_url);
+    const result = await db.updateCustomer(customerId, data.email, data.country, data.name, data.longitude, data.latitude, data.street_address);
     res.status(200).json({message: `Customer ${customerId} updated`, user: "success"});
     console.log("Customer updated");
     console.log(result);
@@ -146,6 +148,23 @@ router.post('/:id/update', async(req, res) => {
   }  
 });
 
+router.post('/:id/updateLocation', async(req, res) => {
+  const data = req.body;
+  const customerId = req.params.id;
+  try{
+    const getCustomer = await db.getCustomer(customerId);
+      if (!getCustomer){
+        throw new Error("Customer does not exist");
+    }
+    const result = await db.updateCustomerLocation(customerId, data.latitude, data.longitude, data.street_address);
+    res.status(200).json({message: `Customer ${customerId} location updated`, user: "success"});
+    console.log("Customer location updated");
+    console.log(result);
+  }catch(err){
+    res.status(401).json({message: `Customer ${customerId} update error`, user: err});
+    console.log("Customer location update error"+err);
+  }  
+});
 
 router.post('/:id/updateImage', async(req, res) => {
   const image = req.files.image;
@@ -155,7 +174,7 @@ router.post('/:id/updateImage', async(req, res) => {
     res.status(400).json({ message: 'Customer does not exist', user: req.body });
     console.log("Customer does not exist");
   }else{
-    await awsS3.deleteObject(awsS3.getKeyFromUrl(customer.image_url));
+    if (customer.image_url) await awsS3.deleteObject(awsS3.getKeyFromUrl(customer.image_url));
     const id = randomUUID();
     const file_name = `images/${customer_id}/pfp-${id}`;
     const putObjectResult = await awsS3.putObject(image.data, file_name);
@@ -221,6 +240,10 @@ router.delete('/:id', async (req, res) => {
       res.status(400).json({message: `Customer ${customer_id} does not exist`, user: req.body});
       console.log(`Customer ${customer_id} does not exist`);
       return;
+    }
+    const customer_cards = await db.getCustomerCards(customer_id);
+    for (const card in customer_cards){
+      await db.removeCustomerCard(customer_id, card.id);
     }
     const db_result = await db.deleteCustomer(customer_id);
     const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(customer.image_url));
