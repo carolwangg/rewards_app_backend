@@ -13,8 +13,14 @@ router.use(fileUpload({
 
 // Define routes
 router.get('/', async (req, res) => {
+  const data = req.body;
+  if (data.latitude && data.longitude && data.radius){
+    const rewards = await db.getRewardsInRadius(data.latitude, data.longitude, data.radius);
+    res.status(200).json({ message: `Rewards in radius ${data.radius} from location (${data.latitude}, ${data.longitude}) fetched`, user: rewards });
+    return;
+  }
   const rewards = await db.getRewards();
-  res.status(200).json({ message: 'Reward fetched', user: rewards });
+  res.status(200).json({ message: 'Rewards fetched', user: rewards });
 });
 
 router.get('/:id', async(req, res) => {

@@ -83,7 +83,6 @@ router.get('/:id/rewards', async (req, res) => {
     res.json({message: `All rewards fetched from csutomer ${customer_id}`, user: rewards});
 });
 
-
 router.get('/create', (req, res) => {
   res.status(200).send('Create customers');
 });

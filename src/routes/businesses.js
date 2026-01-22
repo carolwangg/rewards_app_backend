@@ -1,5 +1,7 @@
 import { Router, json, urlencoded } from 'express';
 import db from "../clients/database.ts";
+import clerk from "../clients/clerk.ts";
+
 import {generateIdenticon} from "../helpers/jidenticon.ts";
 import { randomUUID } from "node:crypto";
 import fileUpload from 'express-fileupload';
@@ -153,10 +155,13 @@ router.delete('/:id', async (req, res) => {
 
     }
     await db.removeCard(business_id);
+    await db.removeUser(business_id);
     const db_result = await db.removeBusiness(business_id);
+    const clerk_result = await clerk.deleteUser(business_id);
     // const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.image_url));
     // const aws_result_2 = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
     console.log(" db_result:"+db_result);
+    console.log(" clerk_result:"+clerk_result);
     // console.log("aws_result:"+aws_result);
     // console.log("aws_result_2:"+aws_result_2);
     res.status(200).json({message: `Business ${business_id} deleted`, user: "success"});

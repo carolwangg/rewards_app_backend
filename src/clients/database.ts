@@ -250,6 +250,18 @@ class Database {
         }
     }
 
+    async getRewardsInRadius(latitude: number, longitude: number, radius: number){
+        try{
+            const command = "SELECT rewards.* FROM rewards JOIN businesses ON rewards.business_id = businesses.id WHERE \
+                    (POWER(? - businesses.latitude, 2) + POWER(? - businesses.longitude, 2)) < POWER(?, 2)"
+            const rows : mysql.RowDataPacket[] = await this.query(command, [latitude, longitude, radius]);
+            return rows;
+        }catch (err){
+            console.error('getRewards error:', err);
+            throw err;
+        }
+    }
+
     async getRewardsFromBusiness(business_id: string){
         try{
             const rows : mysql.RowDataPacket[] = await this.query('SELECT * FROM rewards WHERE business_id = ?', [business_id]);
@@ -583,7 +595,7 @@ export default new Database();
 //     business_id: 'user_1'
 //     }
 
-//     const db = new Database();
+    // const db = new Database();
 //     // db.clearAllTables();
 //     // await db.addCustomer(user_0.id, user_0.email, user_0.country);
 //     // await db.addCustomer(user_2.id, user_2.email, user_2.country);
