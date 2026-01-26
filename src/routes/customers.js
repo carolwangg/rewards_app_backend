@@ -50,6 +50,26 @@ router.get('/:id/cards/:card_id', async(req, res) => {
   }
 });
 
+router.delete('/:id/cards/:card_id', async(req, res) => {
+  const id = req.params.id;
+  const card_id = req.params.card_id;
+  const card = await db.getCustomerCard(id, card_id);
+  if (card == null){
+    res.status(400).json({message: `Card with id ${card_id} does not exist`, user: ""});
+    console.log(`Card with id ${card_id} does not exist`);
+  }else{
+    try{
+      const result = await db.deleteCustomerCard(id, card_id);
+      console.log(result);
+      res.status(200).json({message: `Card with id ${card_id} from custoner ${id} deleted`, user: "success"});
+      console.log(`Card with id ${card_id} from custoner ${id} deleted`);
+    }catch(err){
+      console.error("Error deleting customer card:"+err);
+      res.status(400).json({message: `Error deleting card with id ${card_id} from custoner ${id}`, user: ""});
+    }
+  }
+});
+
 router.get('/:id/cards/:card_id/rewards', async (req, res) => {
     //get rewards that this card can redeem
     //aka all rewards where card.points >= points needed
@@ -242,7 +262,7 @@ router.delete('/:id', async (req, res) => {
     }
     const customer_cards = await db.getCustomerCards(customer_id);
     for (const card in customer_cards){
-      await db.removeCustomerCard(customer_id, card.id);
+      await db.deleteCustomerCard(customer_id, card.id);
     }
     const db_result = await db.deleteCustomer(customer_id);
     const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(customer.image_url));

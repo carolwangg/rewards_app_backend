@@ -36,12 +36,12 @@ class Database {
         }
     }
 
-    async removeUser(id: string){
+    async deleteUser(id: string){
         try{
             const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM user_types WHERE id = ?', [id]);
             return result;
         }catch (err){
-            console.error('removeUser error:', err);
+            console.error('deleteUser error:', err);
             throw err;
         }
     }
@@ -140,12 +140,12 @@ class Database {
         }
     }
 
-    async removeCustomer(id: string){
+    async deleteCustomer(id: string){
         try{
             const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM customers WHERE id = ?', [id]);
             return result;
         }catch (err){
-            console.error('removeCustomer error:', err);
+            console.error('deleteCustomer error:', err);
             throw err;
         }
     }
@@ -229,12 +229,12 @@ class Database {
     }
 
 
-    async removeBusiness(id: string){
+    async deleteBusiness(id: string){
         try{
             const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM businesses WHERE id = ?', [id]);
             return result;
         }catch (err){
-            console.error('removeBusiness error:', err);
+            console.error('deleteBusiness error:', err);
             throw err;
         }
     }
@@ -242,7 +242,7 @@ class Database {
     // Rewards
     async getRewards(){
         try{
-            const rows : mysql.RowDataPacket[] = await this.query('SELECT * FROM rewards');
+            const rows : mysql.RowDataPacket[] = await this.query('SELECT rewards.*, latitude, longitude FROM rewards JOIN businesses ON rewards.business_id = businesses.id');
             return rows;
         }catch (err){
             console.error('getRewards error:', err);
@@ -252,7 +252,7 @@ class Database {
 
     async getRewardsInRadius(latitude: number, longitude: number, radius: number){
         try{
-            const command = "SELECT rewards.* FROM rewards JOIN businesses ON rewards.business_id = businesses.id WHERE \
+            const command = "SELECT rewards.*, latitude, longitude FROM rewards JOIN businesses ON rewards.business_id = businesses.id WHERE \
                     (POWER(? - businesses.latitude, 2) + POWER(? - businesses.longitude, 2)) < POWER(?, 2)"
             const rows : mysql.RowDataPacket[] = await this.query(command, [latitude, longitude, radius]);
             return rows;
@@ -314,12 +314,12 @@ class Database {
         }
     }
 
-    async removeReward(id: string){
+    async deleteReward(id: string){
         try{
             const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM rewards WHERE id = ?', [id]);
             return result;
         }catch (err){
-            console.error('removeReward error:', err);
+            console.error('deleteReward error:', err);
             throw err;
         }
     }
@@ -377,12 +377,12 @@ class Database {
         }
     }
 
-    async removeCard(card_id: string){
+    async deleteCard(card_id: string){
         try{
             const result: mysql.ResultSetHeader[] = await this.query('DELETE FROM cards WHERE id = ?', [card_id]);
             return result;
         }catch (err){
-            console.error('removeCard error:', err);
+            console.error('deleteCard error:', err);
             throw err;
         }
     }
@@ -425,12 +425,12 @@ class Database {
         }
     }
 
-    async removeCustomerCard(customer_id: string, card_id: string){
+    async deleteCustomerCard(customer_id: string, card_id: string){
         try{
             const result: mysql.ResultSetHeader[] = await this.query<mysql.ResultSetHeader[]>('DELETE FROM customer_cards WHERE customer_id = ? AND card_id = ?', [customer_id, card_id]);
             return result;
         }catch (err){
-            console.error('removeCustomerCard error:', err);
+            console.error('deleteCustomerCard error:', err);
             throw err;
         }
     }
@@ -438,7 +438,7 @@ class Database {
     async getBusinessRewards(business_id: string){
         //fetch data in ascending point order
         try{
-            const rows : mysql.RowDataPacket[] = await this.query('SELECT * FROM rewards WHERE business_id = ? ORDER BY rewards.points ASC', [business_id]);
+            const rows : mysql.RowDataPacket[] = await this.query('SELECT rewards.*, latitude, longitude FROM rewards JOIN businesses ON rewards.business_id = businesses.id WHERE business_id = ? ORDER BY rewards.points ASC', [business_id]);
             return rows;
         }catch (err){
             console.error('getBusinessRewards error:', err);
@@ -456,7 +456,7 @@ class Database {
         }
     }
 
-    async removeBusinessRewards(business_id: string){
+    async deleteBusinessRewards(business_id: string){
         try{
             const result: mysql.ResultSetHeader[][] = [];
             const rewards = await this.getBusinessRewards(business_id);
@@ -465,7 +465,7 @@ class Database {
             }
             return result;
         }catch (err){
-            console.error('removeBusinessRewards error:', err);
+            console.error('deleteBusinessRewards error:', err);
             throw err;
         }
     }

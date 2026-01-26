@@ -13,10 +13,10 @@ router.use(fileUpload({
 
 // Define routes
 router.get('/', async (req, res) => {
-  const data = req.body;
-  if (data.latitude && data.longitude && data.radius){
-    const rewards = await db.getRewardsInRadius(data.latitude, data.longitude, data.radius);
-    res.status(200).json({ message: `Rewards in radius ${data.radius} from location (${data.latitude}, ${data.longitude}) fetched`, user: rewards });
+  const {latitude, longitude, radius} = req.query;
+  if (latitude && longitude && radius){
+    const rewards = await db.getRewardsInRadius(latitude, longitude, radius);
+    res.status(200).json({ message: `Rewards in radius ${radius} from location (${latitude}, ${longitude}) fetched`, user: rewards });
     return;
   }
   const rewards = await db.getRewards();
@@ -151,18 +151,19 @@ router.post('/redeem', async(req, res) => {
         console.log("error redeeming reward - not enough points"); 
     }
   }
-
-  /**
+});
+/**
  * @apiQueryGroup [
  *   {"type": "String", "name": "reward_id", "description": "Reward ID"}
  * ]
  */
-  router.delete('/:id', async(req, res) => {
-    // req.body contains the parsed JSON data
-    const reward = await db.getReward(req.params.id);
+router.delete('/:id', async(req, res) => {
+  // req.body contains the parsed JSON data
+  const reward = await db.getReward(req.params.id);
+  try{
     if (reward == null){
-      res.status(400).json({ message: 'Reward does not exist', user: req.body });
-      console.log("Reward does not exist");
+    res.status(400).json({ message: 'Reward does not exist', user: req.body });
+    console.log("Reward does not exist");
     }else{
       const dbResult = db.deleteReward(req.params.id);
       const awsResult = await awsS3.deleteObject(awsS3.getKeyFromUrl(reward.image_url));
@@ -171,7 +172,10 @@ router.post('/redeem', async(req, res) => {
       res.status(200).json({ message: 'Reward deleted', user: "success" });
       console.log("Reward deleted");
     }
-  });
+  }catch(err){
+    console.error("Error occurred while deleting reward:"+err);
+    res.status(400).json({message: "Reward deletion error", user: "Error in the backend"})
+  }
 });
 
 export default router;

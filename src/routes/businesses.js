@@ -150,13 +150,13 @@ router.delete('/:id', async (req, res) => {
     console.log("Rewards:"+JSON.stringify(rewards));
     for (let i = 0; i <rewards.length; i++){
       console.log("reward:"+JSON.stringify(rewards[i]))
-      await db.removeReward(rewards[i].id);
+      await db.deleteReward(rewards[i].id);
       // const aws_result_2 = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
 
     }
-    await db.removeCard(business_id);
-    await db.removeUser(business_id);
-    const db_result = await db.removeBusiness(business_id);
+    await db.deleteCard(business_id);
+    await db.deleteUser(business_id);
+    const db_result = await db.deleteBusiness(business_id);
     const clerk_result = await clerk.deleteUser(business_id);
     // const aws_result = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.image_url));
     // const aws_result_2 = await awsS3.deleteObject(awsS3.getKeyFromUrl(business.banner_url));
